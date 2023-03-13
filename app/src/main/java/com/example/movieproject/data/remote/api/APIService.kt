@@ -1,0 +1,36 @@
+package com.example.movieproject.data.remote.api
+
+import com.example.movieproject.data.remote.remotedatasource.MoviesResponse
+import com.example.movieproject.data.remote.remotedatasource.NetworkFullCast
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Path
+
+
+private val BASE_URL = "https://imdb-api.com/en/API/"
+
+private val moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
+
+private val retrofit = Retrofit.Builder()
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .baseUrl(BASE_URL)
+    .build()
+
+interface APIService {
+    @GET("MostPopularMovies/k_psr6zcqm")
+    suspend fun getMovies(): MoviesResponse
+
+    @GET("Title/k_psr6zcqm/{id}")
+    suspend fun getFullCast(@Path("id")id: String): NetworkFullCast
+}
+
+object Api{
+    val retrofitService: APIService by lazy {
+        retrofit.create(APIService::class.java)
+    }
+}
