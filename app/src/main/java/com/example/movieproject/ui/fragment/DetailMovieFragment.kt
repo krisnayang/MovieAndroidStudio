@@ -8,11 +8,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.databinding.FragmentDetailMovieBinding
+import com.example.movieproject.ui.adapter.CastListAdapter
+import com.example.movieproject.ui.adapter.MovieListAdapter
 import com.example.movieproject.ui.viewmodel.DetailViewModel
 
 class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
@@ -29,6 +33,8 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
 
     private var _binding: FragmentDetailMovieBinding? = null
     private val binding get() = _binding!!
+    private var castAdapter: CastListAdapter? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,12 +54,13 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         val id = navigationArgs.id
 
         viewModel.insertFullCast(id)
-//        viewModel.getFullCast(id).observe(this.viewLifecycleOwner){
-//            fullCast = it[1]
-//        }
         viewModel.fullCast.observe(this.viewLifecycleOwner){
-            fullCast = it[0]
-            bindFullCast()
+            castAdapter?.submitList(it)
+        }
+        castAdapter = CastListAdapter()
+        binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = castAdapter
         }
         viewModel.retrieveMovie(id).observe(this.viewLifecycleOwner){
             movie = it
@@ -67,17 +74,12 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
                 Glide.with(it).load(movie.image).into(movieImage)
                 Glide.with(it).load(movie.image).into(movieIcon)
             }
-//            movieTitle.text = movie.title
+            movieTitle.text = movie.title
             movieYear.text = movie.year.toString()
             movieRating.text = movie.imDbRating
             if(movie.imDbRating.isEmpty()) movieRatingBar.rating = 0.0F
             else movieRatingBar.rating = movie.imDbRating.toFloat()/2
             movieRatingCount.text = movie.imDbRatingCount + " Vote"
-        }
-    }
-    private fun bindFullCast() {
-        binding.apply {
-            movieTitle.text = fullCast.asCharacter
         }
     }
 }

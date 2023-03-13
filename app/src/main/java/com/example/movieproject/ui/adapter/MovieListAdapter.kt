@@ -40,13 +40,13 @@ class MovieListAdapter(
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        val agent = getItem(position)
+        val movie = getItem(position)
 
         holder.itemView.setOnClickListener{
-            clickListener(agent, it)
+            clickListener(movie, it)
         }
-        Glide.with(context).load(agent.image).into(holder.viewDataBinding.movieIcon)
-        holder.bind(agent)
+        Glide.with(context).load(movie.image).into(holder.viewDataBinding.movieIcon)
+        holder.bind(movie)
     }
 
     class MovieViewHolder(val viewDataBinding: ListItemMovieBinding) :

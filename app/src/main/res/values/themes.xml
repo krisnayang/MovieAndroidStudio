@@ -17,4 +17,7 @@
         <item name="colorControlNormal">#B1B1B1</item>
         <item name="colorControlActivated">#FFEB3B</item>
     </style>
+    <style name="RoundedSquare">
+        <item name="cornerSize">15%</item>
+    </style>
 </resources>

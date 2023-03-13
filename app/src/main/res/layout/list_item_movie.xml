@@ -18,13 +18,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/movieIcon"
             android:transitionName="small_icon"
             android:layout_width="100dp"
             android:layout_height="100dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedSquare"
             />
         <TextView
             android:id="@+id/movieName"

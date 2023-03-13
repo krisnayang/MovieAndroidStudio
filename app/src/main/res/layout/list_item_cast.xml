@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="fullcast"
+            type="com.example.movieproject.data.local.localdatasource.FullCastEntity" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp">
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/castImage"
+            android:layout_width="100dp"
+            android:layout_height="125dp"
+            android:transitionName="big_icon"
+            android:scaleType="fitXY"
+            app:shapeAppearanceOverlay="@style/RoundedSquare"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <TextView
+            android:id="@+id/actorName"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/castImage"
+            app:layout_constraintTop_toBottomOf="@+id/castImage"
+            app:layout_constraintEnd_toEndOf="@+id/castImage"
+            app:layout_constraintLeft_toLeftOf="@id/castImage"
+            app:layout_constraintRight_toRightOf="@id/castImage"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:text="@{fullcast.name}"/>
+        <TextView
+            android:id="@+id/charName"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/castImage"
+            app:layout_constraintTop_toBottomOf="@+id/actorName"
+            app:layout_constraintEnd_toEndOf="@+id/castImage"
+            app:layout_constraintLeft_toLeftOf="@id/castImage"
+            app:layout_constraintRight_toRightOf="@id/castImage"
+            android:text="@{fullcast.asCharacter}"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
