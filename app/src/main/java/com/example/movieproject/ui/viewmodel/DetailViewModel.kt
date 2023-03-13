@@ -9,6 +9,7 @@ import com.example.movieproject.data.repository.FullCastRepositoryImpl
 import com.example.movieproject.data.repository.MovieRepositoryImpl
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class DetailViewModel (
     application: Application
@@ -23,12 +24,12 @@ class DetailViewModel (
     val fullCast:LiveData<List<FullCastEntity>> = _fullCast
 
     fun insertFullCast(id: String) = viewModelScope.launch {
-//        try {
+        try {
             fullCastRepository.insertFullCast(id)
         _fullCast.value = fullCastRepository.getFullCast(id).first()
-//        }catch (networkError: IOException) {
-//
-//        }
+        }catch (networkError: IOException) {
+
+        }
     }
 
     class Factory(
