@@ -2,31 +2,33 @@ package com.example.movieproject.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.example.movieproject.data.local.localdatasource.FullCastDatabase
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.local.localdatasource.MovieEntity
-import com.example.movieproject.data.remote.model.FullCast
 import com.example.movieproject.data.repository.FullCastRepositoryImpl
 import com.example.movieproject.data.repository.MovieRepositoryImpl
-import com.example.movieproject.databinding.FragmentDetailMovieBinding
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 class DetailViewModel (
     application: Application
 ): AndroidViewModel(application){
     private val movieRepositoryImpl = MovieRepositoryImpl(MovieDatabase.getDatabase(application))
-    private val fullCastRepository = FullCastRepositoryImpl(FullCastDatabase.getDatabase(application))
+    private val fullCastRepository = FullCastRepositoryImpl(MovieDatabase.getDatabase(application))
 
     fun retrieveMovie(id: String): LiveData<MovieEntity> = movieRepositoryImpl.getMovie(id).asLiveData()
+    fun getFullCast(id: String): LiveData<List<FullCastEntity>> = fullCastRepository.getFullCast(id).asLiveData()
+
+    private var _fullCast: MutableLiveData<List<FullCastEntity>> = MutableLiveData()
+    val fullCast:LiveData<List<FullCastEntity>> = _fullCast
 
     fun insertFullCast(id: String) = viewModelScope.launch {
-        try {
+//        try {
             fullCastRepository.insertFullCast(id)
-        }catch (networkError: IOException) {
-
-        }
+        _fullCast.value = fullCastRepository.getFullCast(id).first()
+//        }catch (networkError: IOException) {
+//
+//        }
     }
 
     class Factory(

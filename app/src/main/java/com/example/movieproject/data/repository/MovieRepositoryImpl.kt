@@ -11,7 +11,7 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
     override suspend fun refreshMovie(){
         withContext(Dispatchers.IO){
             val movie = Api.retrofitService.getMovies()
-            database.movieDao.insertAll(movie.asDatabaseModel())
+            database.movieDao.insertAllMovie(movie.asDatabaseModel())
         }
     }
 

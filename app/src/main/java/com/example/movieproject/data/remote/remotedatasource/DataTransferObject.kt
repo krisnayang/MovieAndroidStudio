@@ -26,8 +26,6 @@ data class NetworkMovie (
 @JsonClass(generateAdapter = true)
 data class NetworkFullCast (
     val id: String,
-    val title: String,
-    val runtimeMins: Int,
     val actorList: List<Actors>
 )
 
@@ -58,14 +56,17 @@ fun MoviesResponse.asDatabaseModel(): List<MovieEntity> {
 }
 
 fun NetworkFullCast.asDomainModel(): List<FullCast> {
-    return listOf(FullCast(id = id, title = title, runtimeMins = runtimeMins, actors = actorList))
+    return listOf(FullCast(id = id, actors = actorList))
 }
 
 fun NetworkFullCast.asDatabaseModel(): List<FullCastEntity> {
-    return listOf(FullCastEntity(id = id,
-        title = title,
-        runtimeMins = runtimeMins,
-    image = actorList[0].image,
-    name = actorList[0].name,
-    asCharacter = actorList[0].asCharacter))
+    return actorList.map {
+        FullCastEntity(
+            id = it.id,
+            movieId = id,
+            image = it.image,
+            name = it.name,
+            asCharacter = it.asCharacter
+        )
+    }
 }

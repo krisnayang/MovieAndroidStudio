@@ -2,13 +2,10 @@ package com.example.movieproject.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.example.movieproject.data.local.localdatasource.FullCastDatabase
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.data.local.localdatasource.asDomainModel
 import com.example.movieproject.data.local.model.Movie
-import com.example.movieproject.data.repository.FullCastRepository
-import com.example.movieproject.data.repository.FullCastRepositoryImpl
 import com.example.movieproject.data.repository.MovieRepositoryImpl
 import kotlinx.coroutines.launch
 import java.io.IOException

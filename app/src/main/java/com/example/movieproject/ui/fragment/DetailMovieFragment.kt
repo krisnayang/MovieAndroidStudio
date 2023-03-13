@@ -7,16 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
-import com.example.movieproject.data.remote.model.FullCast
 import com.example.movieproject.databinding.FragmentDetailMovieBinding
 import com.example.movieproject.ui.viewmodel.DetailViewModel
-import kotlinx.coroutines.launch
 
 class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
     private val navigationArgs: DetailMovieFragmentArgs by navArgs()
@@ -28,6 +25,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         ViewModelProvider(this, DetailViewModel.Factory(activity.application))[DetailViewModel::class.java]
     }
     private lateinit var movie: MovieEntity
+    private lateinit var fullCast: FullCastEntity
 
     private var _binding: FragmentDetailMovieBinding? = null
     private val binding get() = _binding!!
@@ -50,24 +48,36 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         val id = navigationArgs.id
 
         viewModel.insertFullCast(id)
+//        viewModel.getFullCast(id).observe(this.viewLifecycleOwner){
+//            fullCast = it[1]
+//        }
+        viewModel.fullCast.observe(this.viewLifecycleOwner){
+            fullCast = it[0]
+            bindFullCast()
+        }
         viewModel.retrieveMovie(id).observe(this.viewLifecycleOwner){
             movie = it
-            bindForageable()
+            bindMovie()
         }
     }
 
-    private fun bindForageable() {
+    private fun bindMovie() {
         binding.apply {
             context?.let {
                 Glide.with(it).load(movie.image).into(movieImage)
                 Glide.with(it).load(movie.image).into(movieIcon)
             }
-            movieTitle.text = movie.title
+//            movieTitle.text = movie.title
             movieYear.text = movie.year.toString()
             movieRating.text = movie.imDbRating
             if(movie.imDbRating.isEmpty()) movieRatingBar.rating = 0.0F
             else movieRatingBar.rating = movie.imDbRating.toFloat()/2
             movieRatingCount.text = movie.imDbRatingCount + " Vote"
+        }
+    }
+    private fun bindFullCast() {
+        binding.apply {
+            movieTitle.text = fullCast.asCharacter
         }
     }
 }
