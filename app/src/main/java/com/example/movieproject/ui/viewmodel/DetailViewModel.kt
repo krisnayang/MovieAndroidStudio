@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
+import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.data.repository.FullCastRepositoryImpl
 import com.example.movieproject.data.repository.MovieRepositoryImpl
@@ -17,16 +18,17 @@ class DetailViewModel (
     private val movieRepositoryImpl = MovieRepositoryImpl(MovieDatabase.getDatabase(application))
     private val fullCastRepository = FullCastRepositoryImpl(MovieDatabase.getDatabase(application))
 
-    fun retrieveMovie(id: String): LiveData<MovieEntity> = movieRepositoryImpl.getMovie(id).asLiveData()
-    fun getFullCast(id: String): LiveData<List<FullCastEntity>> = fullCastRepository.getFullCast(id).asLiveData()
-
     private var _fullCast: MutableLiveData<List<FullCastEntity>> = MutableLiveData()
     val fullCast:LiveData<List<FullCastEntity>> = _fullCast
+
+    private var _movieDetail: MutableLiveData<MovieDetailEntity> = MutableLiveData()
+    val movieDetail: LiveData<MovieDetailEntity> = _movieDetail
 
     fun insertFullCast(id: String) = viewModelScope.launch {
         try {
             fullCastRepository.insertFullCast(id)
-        _fullCast.value = fullCastRepository.getFullCast(id).first()
+            _fullCast.value = fullCastRepository.getFullCast(id).first()
+            _movieDetail.value = movieRepositoryImpl.getMovie(id).first()
         }catch (networkError: IOException) {
 
         }

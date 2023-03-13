@@ -1,9 +1,9 @@
 package com.example.movieproject.data.remote.remotedatasource
 
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
+import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.data.remote.model.Actors
-import com.example.movieproject.data.remote.model.FullCast
 import com.example.movieproject.data.remote.model.Movie
 import com.squareup.moshi.JsonClass
 
@@ -24,8 +24,17 @@ data class NetworkMovie (
 )
 
 @JsonClass(generateAdapter = true)
-data class NetworkFullCast (
+data class NetworkMovieById (
     val id: String,
+    val image: String,
+    val title: String,
+    val year: String,
+    val runtimeMins: Int,
+    val plot: String,
+    val directors: String,
+    val genres: String,
+    val imDbRating: String,
+    val imDbRatingVotes: Int,
     val actorList: List<Actors>
 )
 
@@ -55,11 +64,7 @@ fun MoviesResponse.asDatabaseModel(): List<MovieEntity> {
     }
 }
 
-fun NetworkFullCast.asDomainModel(): List<FullCast> {
-    return listOf(FullCast(id = id, actors = actorList))
-}
-
-fun NetworkFullCast.asDatabaseModel(): List<FullCastEntity> {
+fun NetworkMovieById.asDatabaseModel(): List<FullCastEntity> {
     return actorList.map {
         FullCastEntity(
             id = it.id,
@@ -69,4 +74,21 @@ fun NetworkFullCast.asDatabaseModel(): List<FullCastEntity> {
             asCharacter = it.asCharacter
         )
     }
+}
+
+fun NetworkMovieById.asDatabaseMovieDetail(): List<MovieDetailEntity> {
+    return listOf(
+        MovieDetailEntity(
+        id = id,
+        image = image,
+        title = title,
+        year = year,
+        runtimeMins = runtimeMins,
+        plot = plot,
+        directors = directors,
+        genres = genres,
+        imDbRating = imDbRating,
+        imDbRatingVotes = imDbRatingVotes
+    )
+    )
 }

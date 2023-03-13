@@ -18,13 +18,3 @@ data class FullCastEntity (
     @NonNull @ColumnInfo(name = "name") val name: String,
     @NonNull @ColumnInfo(name = "asCharacter") val asCharacter: String,
 )
-
-//Mengubah Database menjadi model
-fun List<FullCastEntity>.asDomainModel(): List<FullCast> {
-    return map {
-        FullCast(
-            id = it.id,
-            listOf(Actors(it.movieId, it.image, it.name, it.asCharacter))
-        )
-    }
-}

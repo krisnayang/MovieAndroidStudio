@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
+import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.databinding.FragmentDetailMovieBinding
 import com.example.movieproject.ui.adapter.CastListAdapter
@@ -28,7 +29,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         }
         ViewModelProvider(this, DetailViewModel.Factory(activity.application))[DetailViewModel::class.java]
     }
-    private lateinit var movie: MovieEntity
+    private lateinit var movie: MovieDetailEntity
     private lateinit var fullCast: FullCastEntity
 
     private var _binding: FragmentDetailMovieBinding? = null
@@ -54,6 +55,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         val id = navigationArgs.id
 
         viewModel.insertFullCast(id)
+
         viewModel.fullCast.observe(this.viewLifecycleOwner){
             castAdapter?.submitList(it)
         }
@@ -62,7 +64,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = castAdapter
         }
-        viewModel.retrieveMovie(id).observe(this.viewLifecycleOwner){
+        viewModel.movieDetail.observe(this.viewLifecycleOwner){
             movie = it
             bindMovie()
         }
@@ -79,7 +81,11 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             movieRating.text = movie.imDbRating
             if(movie.imDbRating.isEmpty()) movieRatingBar.rating = 0.0F
             else movieRatingBar.rating = movie.imDbRating.toFloat()/2
-            movieRatingCount.text = movie.imDbRatingCount + " Vote"
+            movieRatingCount.text = movie.imDbRatingVotes.toString() + " Vote"
+            movieGenre.text = movie.genres
+            movieDuration.text = movie.runtimeMins.toString() + " Mins"
+            movieDirector.text = movie.directors
+            plotDesc.text = movie.plot
         }
     }
 }

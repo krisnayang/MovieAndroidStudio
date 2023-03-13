@@ -16,5 +16,5 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
     }
 
     fun getMovies() = database.movieDao.getMovies().asLiveData()
-    fun getMovie(id: String) = database.movieDao.getMovie(id)
+    fun getMovie(id: String) = database.movieDao.getMovieDetail(id)
 }

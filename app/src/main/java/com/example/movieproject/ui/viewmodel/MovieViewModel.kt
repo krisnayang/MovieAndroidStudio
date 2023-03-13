@@ -16,6 +16,7 @@ class MovieViewModel (
     private val movieRepositoryImpl = MovieRepositoryImpl(MovieDatabase.getDatabase(application))
 
     private val movies: LiveData<List<MovieEntity>> = movieRepositoryImpl.getMovies()
+
     fun getMovies(): LiveData<List<Movie>> = Transformations.map(movies){
         it.asDomainModel()
     }

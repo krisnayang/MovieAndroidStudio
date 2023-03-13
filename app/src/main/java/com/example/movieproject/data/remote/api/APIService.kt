@@ -1,7 +1,7 @@
 package com.example.movieproject.data.remote.api
 
 import com.example.movieproject.data.remote.remotedatasource.MoviesResponse
-import com.example.movieproject.data.remote.remotedatasource.NetworkFullCast
+import com.example.movieproject.data.remote.remotedatasource.NetworkMovieById
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
@@ -22,11 +22,11 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface APIService {
-    @GET("MostPopularMovies/k_psr6zcqm")
+    @GET("MostPopularMovies/k_w5xpu5vt")
     suspend fun getMovies(): MoviesResponse
 
-    @GET("Title/k_psr6zcqm/{id}")
-    suspend fun getFullCast(@Path("id")id: String): NetworkFullCast
+    @GET("Title/k_w5xpu5vt/{id}")
+    suspend fun getFullCast(@Path("id")id: String): NetworkMovieById
 }
 
 object Api{

@@ -3,6 +3,7 @@ package com.example.movieproject.data.repository
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.remote.api.Api
 import com.example.movieproject.data.remote.remotedatasource.asDatabaseModel
+import com.example.movieproject.data.remote.remotedatasource.asDatabaseMovieDetail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -11,6 +12,7 @@ class FullCastRepositoryImpl(private val database: MovieDatabase): FullCastRepos
         withContext(Dispatchers.IO){
             val fullCast = Api.retrofitService.getFullCast(id)
             database.movieDao.insertAllFullCast(fullCast.asDatabaseModel())
+            database.movieDao.insertMovieDetail(fullCast.asDatabaseMovieDetail())
         }
     }
 
