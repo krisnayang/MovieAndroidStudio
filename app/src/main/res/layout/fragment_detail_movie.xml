@@ -50,8 +50,8 @@
                 app:layout_constraintTop_toTopOf="parent">
                 <ImageView
                     android:id="@+id/movieIcon"
-                    android:layout_width="100dp"
-                    android:layout_height="125dp"
+                    android:layout_width="115dp"
+                    android:layout_height="150dp"
                     android:transitionName="big_icon"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
@@ -226,7 +226,7 @@
                     android:id="@+id/recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
+                    android:layout_marginTop="10dp"
                     app:layout_constraintTop_toBottomOf="@id/dividerCastTitle"
                     app:layout_constraintStart_toStartOf="@id/castTitle"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

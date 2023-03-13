@@ -2,6 +2,7 @@ package com.example.movieproject.data.remote.api
 
 import com.example.movieproject.data.remote.remotedatasource.MoviesResponse
 import com.example.movieproject.data.remote.remotedatasource.NetworkMovieById
+import com.example.movieproject.data.remote.remotedatasource.SearchMovieResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
@@ -27,6 +28,9 @@ interface APIService {
 
     @GET("Title/k_w5xpu5vt/{id}")
     suspend fun getFullCast(@Path("id")id: String): NetworkMovieById
+
+    @GET("SearchTitle/k_w5xpu5vt/{title}")
+    suspend fun searchMovies(@Path("title")title: String): SearchMovieResponse
 }
 
 object Api{

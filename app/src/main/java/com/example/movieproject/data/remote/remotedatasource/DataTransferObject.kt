@@ -3,8 +3,8 @@ package com.example.movieproject.data.remote.remotedatasource
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
+import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.remote.model.Actors
-import com.example.movieproject.data.remote.model.Movie
 import com.squareup.moshi.JsonClass
 
 
@@ -36,6 +36,18 @@ data class NetworkMovieById (
     val imDbRating: String,
     val imDbRatingVotes: Int,
     val actorList: List<Actors>
+)
+
+@JsonClass(generateAdapter = true)
+data class SearchMovieResponse(
+    val results: List<NetworkSearch>
+)
+
+@JsonClass(generateAdapter = true)
+data class NetworkSearch (
+    val id: String,
+    val title: String,
+    val image: String,
 )
 
 fun MoviesResponse.asDomainModel(): List<Movie> {
@@ -78,17 +90,30 @@ fun NetworkMovieById.asDatabaseModel(): List<FullCastEntity> {
 
 fun NetworkMovieById.asDatabaseMovieDetail(): List<MovieDetailEntity> {
     return listOf(
-        MovieDetailEntity(
-        id = id,
-        image = image,
-        title = title,
-        year = year,
-        runtimeMins = runtimeMins,
-        plot = plot,
-        directors = directors,
-        genres = genres,
-        imDbRating = imDbRating,
-        imDbRatingVotes = imDbRatingVotes
+            MovieDetailEntity(
+            id = id,
+            image = image,
+            title = title,
+            year = year,
+            runtimeMins = runtimeMins,
+            plot = plot,
+            directors = directors,
+            genres = genres,
+            imDbRating = imDbRating,
+            imDbRatingVotes = imDbRatingVotes
+        )
     )
-    )
+}
+
+fun SearchMovieResponse.asList(): List<Movie>{
+    return results.map {
+        Movie(
+            id = it.id,
+            title = it.title,
+            image = it.image,
+            year = 0,
+            imDbRatingCount = "",
+            imDbRating = ""
+        )
+    }
 }

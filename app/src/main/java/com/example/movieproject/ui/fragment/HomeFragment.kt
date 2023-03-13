@@ -53,7 +53,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.viewModel = viewModel
 
 //        getCurrentActivity()?.getBottomNav()?.visibility = View.VISIBLE
-
         viewModelAdapter = MovieListAdapter(){movie, view ->
             getCurrentActivity()?.getBottomNav()?.visibility = View.GONE
             val extra = FragmentNavigatorExtras(view.movieIcon to "big_icon")
