@@ -15,12 +15,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movieproject.R
 import com.example.movieproject.databinding.FragmentHomeBinding
+import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
 import com.example.movieproject.ui.viewmodel.DetailViewModel
 import com.example.movieproject.ui.viewmodel.MovieViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.list_item_movie.view.*
+import kotlinx.coroutines.delay
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private val viewModel: MovieViewModel by lazy {
@@ -49,19 +51,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        binding.shimmerContainer.startShimmer()
-        binding.recyclerView.visibility = View.GONE
+        startShimmerEffect(binding)
         viewModel.getMovies().observe(this.viewLifecycleOwner){
             viewModelAdapter?.submitList(it)
             if (it.isNotEmpty()){
-                Handler(Looper.getMainLooper()).postDelayed({
-                    binding.shimmerContainer.stopShimmer()
-                    binding.shimmerContainer.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                },1000)
+                stopShimmerEffect(binding)
             }else{
-                binding.shimmerContainer.startShimmer()
-                binding.recyclerView.visibility = View.GONE
+                startShimmerEffect(binding)
             }
         }
 
@@ -87,5 +83,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun getCurrentActivity(): MainActivity?{
         return (activity as? MainActivity)
+    }
+
+    private fun startShimmerEffect(binding: FragmentHomeBinding){
+        binding.shimmerContainer.startShimmer()
+        binding.recyclerView.visibility = View.GONE
+    }
+
+    private fun stopShimmerEffect(binding: FragmentHomeBinding){
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.shimmerContainer.stopShimmer()
+            binding.shimmerContainer.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+        },1000)
     }
 }

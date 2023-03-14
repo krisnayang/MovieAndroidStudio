@@ -7,6 +7,7 @@ import com.example.movieproject.data.remote.api.Api
 import com.example.movieproject.data.remote.remotedatasource.asDatabaseModel
 import com.example.movieproject.data.remote.remotedatasource.asList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository{
@@ -22,6 +23,7 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
 
     suspend fun searchMovies(title: String): List<Movie>{
         return withContext(Dispatchers.IO) {
+            delay(3000)
             Api.retrofitService.searchMovies(title).asList()
         }
     }
