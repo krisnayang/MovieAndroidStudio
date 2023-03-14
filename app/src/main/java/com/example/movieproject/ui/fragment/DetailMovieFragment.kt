@@ -30,7 +30,6 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         ViewModelProvider(this, DetailViewModel.Factory(activity.application))[DetailViewModel::class.java]
     }
     private lateinit var movie: MovieDetailEntity
-    private lateinit var fullCast: FullCastEntity
 
     private var _binding: FragmentDetailMovieBinding? = null
     private val binding get() = _binding!!

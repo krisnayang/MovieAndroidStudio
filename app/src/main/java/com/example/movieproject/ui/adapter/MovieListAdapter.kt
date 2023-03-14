@@ -57,9 +57,6 @@ class MovieListAdapter(
         }
         fun bind(movie: Movie){
             viewDataBinding.movie = movie
-            if(movie.imDbRating.isEmpty()) viewDataBinding.movieRatingBar.rating = 0.0F
-            else viewDataBinding.movieRatingBar.rating = movie.imDbRating.toFloat()/2
-            viewDataBinding.movieYear.text = movie.year.toString()
             viewDataBinding.executePendingBindings()
         }
     }

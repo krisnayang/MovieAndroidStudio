@@ -58,8 +58,23 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             }
 
             override fun afterTextChanged(title: Editable?) {
+                binding.shimmerContainer.startShimmer()
+                binding.recyclerView.visibility = View.GONE
                 viewModel.searchMovies(title.toString())
-                viewModelAdapter?.submitList(viewModel.movies)
+                viewModel.movies.observe(viewLifecycleOwner){
+                    viewModelAdapter?.submitList(it)
+                    if (it.isNotEmpty()){
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            binding.shimmerContainer.stopShimmer()
+                            binding.shimmerContainer.visibility = View.GONE
+                            binding.recyclerView.visibility = View.VISIBLE
+                        },1000)
+                    }else{
+                        binding.shimmerContainer.startShimmer()
+                        binding.recyclerView.visibility = View.GONE
+                    }
+                }
+
                 viewModelAdapter = MovieListAdapter(){movie, view ->
                     getCurrentActivity()?.getBottomNav()?.visibility = View.GONE
                     val extra = FragmentNavigatorExtras(view.movieIcon to "big_icon")
@@ -71,13 +86,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                     layoutManager = LinearLayoutManager(context)
                     adapter = viewModelAdapter
                 }
-                binding.shimmerContainer.startShimmer()
-                binding.recyclerView.visibility = View.GONE
-                Handler(Looper.getMainLooper()).postDelayed({
-                    binding.shimmerContainer.stopShimmer()
-                    binding.shimmerContainer.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                },1000)
             }
         })
 

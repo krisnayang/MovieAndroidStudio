@@ -37,36 +37,5 @@
             app:layout_constraintTop_toTopOf="@+id/movieIcon"
             app:layout_constraintStart_toEndOf="@id/movieIcon"
             tools:text="Name" />
-        <TextView
-            android:id="@+id/movieYear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            app:layout_constraintTop_toBottomOf="@id/movieName"
-            app:layout_constraintStart_toStartOf="@id/movieName"
-            tools:text="Year" />
-        <RatingBar
-            android:id="@+id/movieRatingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?android:attr/ratingBarStyleSmall"
-            android:stepSize="0.1"
-            android:max="10"
-            android:numStars="5"
-            android:clickable="false"
-            android:isIndicator="true"
-            android:theme="@style/RatingBar"
-            app:layout_constraintStart_toStartOf="@id/movieName"
-            app:layout_constraintTop_toBottomOf="@id/movieYear"/>
-        <TextView
-            android:id="@+id/movieRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{movie.imDbRating}"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            app:layout_constraintTop_toTopOf="@id/movieRatingBar"
-            app:layout_constraintStart_toEndOf="@id/movieRatingBar"
-            app:layout_constraintBottom_toBottomOf="@id/movieRatingBar"
-            tools:text="10" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

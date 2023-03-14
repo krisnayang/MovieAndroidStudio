@@ -20,7 +20,7 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
     fun getMovies() = database.movieDao.getMovies().asLiveData()
     fun getMovie(id: String) = database.movieDao.getMovieDetail(id)
 
-    suspend fun searchMovies(title: String): List<Movie> {
+    suspend fun searchMovies(title: String): List<Movie>{
         return withContext(Dispatchers.IO) {
             Api.retrofitService.searchMovies(title).asList()
         }

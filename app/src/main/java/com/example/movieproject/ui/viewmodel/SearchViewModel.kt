@@ -15,12 +15,12 @@ class SearchViewModel (
     private val movieRepositoryImpl = MovieRepositoryImpl(MovieDatabase.getDatabase(application))
 
 
-    private var _movies: List<Movie> = listOf()
-    val movies: List<Movie> = _movies
+    private var _movies = MutableLiveData<List<Movie>>()
+    val movies: MutableLiveData<List<Movie>> = _movies
 
     fun searchMovies(title: String) = viewModelScope.launch {
         try {
-            _movies = movieRepositoryImpl.searchMovies(title)
+            _movies.value = movieRepositoryImpl.searchMovies(title)
         }catch (networkError: IOException) {
 
         }

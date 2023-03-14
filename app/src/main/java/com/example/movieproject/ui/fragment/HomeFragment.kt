@@ -33,9 +33,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getMovies().observe(this.viewLifecycleOwner){
-            viewModelAdapter?.submitList(it)
-        }
     }
 
     override fun onCreateView(
@@ -51,6 +48,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+
+        binding.shimmerContainer.startShimmer()
+        binding.recyclerView.visibility = View.GONE
+        viewModel.getMovies().observe(this.viewLifecycleOwner){
+            viewModelAdapter?.submitList(it)
+            if (it.isNotEmpty()){
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.shimmerContainer.stopShimmer()
+                    binding.shimmerContainer.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                },1000)
+            }else{
+                binding.shimmerContainer.startShimmer()
+                binding.recyclerView.visibility = View.GONE
+            }
+        }
 
 //        getCurrentActivity()?.getBottomNav()?.visibility = View.VISIBLE
         viewModelAdapter = MovieListAdapter(){movie, view ->
@@ -68,14 +81,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             viewModel.refreshMovies()
             swipeContainer.isRefreshing = false
         }
-
-        binding.shimmerContainer.startShimmer()
-        binding.recyclerView.visibility = View.GONE
-        Handler(Looper.getMainLooper()).postDelayed({
-            binding.shimmerContainer.stopShimmer()
-            binding.shimmerContainer.visibility = View.GONE
-            binding.recyclerView.visibility = View.VISIBLE
-        },1000)
 
         return binding.root
     }

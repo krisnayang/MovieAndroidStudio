@@ -17,10 +17,7 @@ data class MoviesResponse(
 data class NetworkMovie (
     val id: String,
     val title: String,
-    val year: Int,
     val image: String,
-    val imDbRating: String,
-    val imDbRatingCount: String,
 )
 
 @JsonClass(generateAdapter = true)
@@ -55,10 +52,7 @@ fun MoviesResponse.asDomainModel(): List<Movie> {
         Movie(
             id = it.id,
             title = it.title,
-            year = it.year,
             image = it.image,
-            imDbRating = it.imDbRating,
-            imDbRatingCount = it.imDbRatingCount
         )
     }
 }
@@ -68,10 +62,7 @@ fun MoviesResponse.asDatabaseModel(): List<MovieEntity> {
         MovieEntity(
             id = it.id,
             title = it.title,
-            year = it.year,
             image = it.image,
-            imDbRating = it.imDbRating,
-            imDbRatingCount = it.imDbRatingCount
         )
     }
 }
@@ -111,9 +102,6 @@ fun SearchMovieResponse.asList(): List<Movie>{
             id = it.id,
             title = it.title,
             image = it.image,
-            year = 0,
-            imDbRatingCount = "",
-            imDbRating = ""
         )
     }
 }
