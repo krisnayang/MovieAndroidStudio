@@ -11,6 +11,7 @@ import com.example.movieproject.data.local.localdatasource.asDomainModel
 import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.remote.api.Api
 import com.example.movieproject.data.remote.remotedatasource.*
+import com.example.movieproject.ui.state.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -22,14 +23,12 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
         database.movieDao.insertAllMovie(movieResponse.asDatabaseModel())
     }
 
-    override suspend fun getMovies(context: Context): List<Movie>?{
+    override suspend fun getMovies(context: Context): UiState<List<Movie>>{
         return withContext(Dispatchers.IO) {
             if (checkInternet(context)) {
-                val response = Api.retrofitService.getMovies()
-                insertMovies(response)
-                response.asDomainModel()
+                getMoviesFromApi()
             } else {
-                database.movieDao.getMovies().first().asDomainModel()
+                getMoviesFromDb()
             }
         }
     }
@@ -42,12 +41,23 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
         }
     }
 
-    fun checkInternet(context: Context): Boolean{
+    private fun checkInternet(context: Context): Boolean{
         val connectivityManager: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         if (networkInfo != null){
             return true
         }
         return false
+    }
+
+    private suspend fun getMoviesFromApi(): UiState<List<Movie>>{
+        val response = Api.retrofitService.getMovies()
+        insertMovies(response)
+        return UiState(isLoading = response.asDomainModel().isEmpty(), value = response.asDomainModel())
+    }
+
+    private suspend fun getMoviesFromDb(): UiState<List<Movie>>{
+        val movies = database.movieDao.getMovies().first().asDomainModel()
+        return UiState(isLoading = movies.isEmpty(), movies)
     }
 }

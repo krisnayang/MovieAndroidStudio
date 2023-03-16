@@ -23,13 +23,13 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface APIService {
-    @GET("MostPopularMovies/k_x7yw68hc")
+    @GET("MostPopularMovies/k_psr6zcqm")
     suspend fun getMovies(): MoviesResponse
 
-    @GET("Title/k_x7yw68hc/{id}")
+    @GET("Title/k_psr6zcqm/{id}")
     suspend fun getFullCast(@Path("id")id: String): NetworkMovieById
 
-    @GET("SearchTitle/k_x7yw68hc/{title}")
+    @GET("SearchTitle/k_psr6zcqm/{title}")
     suspend fun searchMovies(@Path("title")title: String): SearchMovieResponse
 }
 

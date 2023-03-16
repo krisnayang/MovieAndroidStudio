@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,7 @@ import com.example.movieproject.ui.viewmodel.MovieViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.list_item_movie.view.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private val viewModel: MovieViewModel by lazy {
@@ -37,8 +39,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         getCurrentActivity()?.getBottomNav()?.visibility = View.VISIBLE
     }
 
@@ -56,14 +58,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        startShimmerEffect(binding)
         viewModel.getMovieList(requireContext())
-        viewModel.movies.observe(viewLifecycleOwner){
-            viewModelAdapter?.submitList(it)
-            if (it.isNotEmpty()){
-                stopShimmerEffect(binding)
-            }else{
-                startShimmerEffect(binding)
+        binding.swipeContainer.setOnRefreshListener {
+            viewModel.getMovieList(requireContext())
+            swipeContainer.isRefreshing = false
+        }
+        lifecycleScope.launchWhenStarted {
+            viewModel.movies.collect{
+                viewModelAdapter?.submitList(it.value)
+                if (!it.isLoading){
+                    stopShimmerEffect(binding)
+                }else{
+                    startShimmerEffect(binding)
+                }
             }
         }
         viewModelAdapter = MovieListAdapter(){movie, view ->
@@ -77,10 +84,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             layoutManager = LinearLayoutManager(context)
             adapter = viewModelAdapter
         }
-        binding.swipeContainer.setOnRefreshListener {
-            context?.let { viewModel.getMovieList(it) }
-            swipeContainer.isRefreshing = false
-        }
 
         return binding.root
     }
@@ -91,6 +94,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun startShimmerEffect(binding: FragmentHomeBinding){
         binding.shimmerContainer.startShimmer()
+        binding.shimmerContainer.visibility = View.VISIBLE
         binding.recyclerView.visibility = View.GONE
     }
 

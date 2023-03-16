@@ -76,7 +76,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
                 Glide.with(it).load(movie.image).into(movieIcon)
             }
             movieTitle.text = movie.title
-            movieYear.text = movie.year.toString()
+            movieYear.text = movie.year
             movieRating.text = movie.imDbRating
             if(movie.imDbRating.isEmpty()) movieRatingBar.rating = 0.0F
             else movieRatingBar.rating = movie.imDbRating.toFloat()/2
