@@ -37,10 +37,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
     }
 
+    override fun onResume() {
+        super.onResume()
+        getCurrentActivity()?.getBottomNav()?.visibility = View.VISIBLE
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         val binding: FragmentHomeBinding = DataBindingUtil.inflate(
             inflater,
@@ -52,7 +57,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.viewModel = viewModel
 
         startShimmerEffect(binding)
-        viewModel.getMovies().observe(this.viewLifecycleOwner){
+        viewModel.getMovieList(requireContext())
+        viewModel.movies.observe(viewLifecycleOwner){
             viewModelAdapter?.submitList(it)
             if (it.isNotEmpty()){
                 stopShimmerEffect(binding)
@@ -60,8 +66,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 startShimmerEffect(binding)
             }
         }
-
-//        getCurrentActivity()?.getBottomNav()?.visibility = View.VISIBLE
         viewModelAdapter = MovieListAdapter(){movie, view ->
             getCurrentActivity()?.getBottomNav()?.visibility = View.GONE
             val extra = FragmentNavigatorExtras(view.movieIcon to "big_icon")
@@ -74,7 +78,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             adapter = viewModelAdapter
         }
         binding.swipeContainer.setOnRefreshListener {
-            viewModel.refreshMovies()
+            context?.let { viewModel.getMovieList(it) }
             swipeContainer.isRefreshing = false
         }
 

@@ -1,6 +1,7 @@
 package com.example.movieproject.ui.viewmodel
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.*
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.local.localdatasource.MovieEntity
@@ -14,22 +15,12 @@ class MovieViewModel (
     application: Application
 ): AndroidViewModel(application){
     private val movieRepositoryImpl = MovieRepositoryImpl(MovieDatabase.getDatabase(application))
+    private var _movies = MutableLiveData<List<Movie>>()
+    val movies: MutableLiveData<List<Movie>> = _movies
 
-    private val movies: LiveData<List<MovieEntity>> = movieRepositoryImpl.getMovies()
+    fun getMovieList(context: Context) = viewModelScope.launch {
+        _movies.value = movieRepositoryImpl.getMovies(context)
 
-    fun getMovies(): LiveData<List<Movie>> = Transformations.map(movies){
-        it.asDomainModel()
-    }
-    fun refreshMovies() = viewModelScope.launch {
-        try {
-            movieRepositoryImpl.refreshMovie()
-        } catch (networkError: IOException) {
-
-        }
-    }
-
-    init {
-        refreshMovies()
     }
 
     class Factory(

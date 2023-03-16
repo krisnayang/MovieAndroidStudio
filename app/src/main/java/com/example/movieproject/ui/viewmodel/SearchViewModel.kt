@@ -14,7 +14,6 @@ class SearchViewModel (
 ): AndroidViewModel(application){
     private val movieRepositoryImpl = MovieRepositoryImpl(MovieDatabase.getDatabase(application))
 
-
     private var _movies = MutableLiveData<List<Movie>>()
     val movies: MutableLiveData<List<Movie>> = _movies
 
@@ -28,7 +27,7 @@ class SearchViewModel (
 
     fun refreshMovies() = viewModelScope.launch {
         try {
-            movieRepositoryImpl.refreshMovie()
+//            movieRepositoryImpl.refreshMovies()
         } catch (networkError: IOException) {
 
         }
