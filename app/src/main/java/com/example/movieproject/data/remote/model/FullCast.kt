@@ -6,8 +6,8 @@ data class FullCast (
 )
 
 data class Actors(
-    val id: String,
-    val image: String,
-    val name: String,
-    val asCharacter: String
+    val id: String? = "",
+    val image: String? = "",
+    val name: String? = "",
+    val asCharacter: String? = ""
 )

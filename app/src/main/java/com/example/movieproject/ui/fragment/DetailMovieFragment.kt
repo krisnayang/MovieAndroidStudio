@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,19 +54,23 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         super.onViewCreated(view, savedInstanceState)
         val id = navigationArgs.id
 
-        viewModel.insertFullCast(id)
-
-        viewModel.fullCast.observe(this.viewLifecycleOwner){
-            castAdapter?.submitList(it)
+        viewModel.getFullCast(id, requireContext())
+        lifecycleScope.launchWhenStarted {
+            viewModel.fullCast.collect{
+                castAdapter?.submitList(it.value)
+            }
         }
+        lifecycleScope.launchWhenStarted {
+            viewModel.movieDetail.collect{
+                movie = it.value
+                bindMovie()
+            }
+        }
+
         castAdapter = CastListAdapter()
         binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = castAdapter
-        }
-        viewModel.movieDetail.observe(this.viewLifecycleOwner){
-            movie = it
-            bindMovie()
         }
     }
 
@@ -77,9 +82,8 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             }
             movieTitle.text = movie.title
             movieYear.text = movie.year
-            movieRating.text = movie.imDbRating
-            if(movie.imDbRating.isEmpty()) movieRatingBar.rating = 0.0F
-            else movieRatingBar.rating = movie.imDbRating.toFloat()/2
+            movieRating.text = movie.imDbRating.toString()
+            movieRatingBar.rating = ((movie.imDbRating?.div(2))?.toFloat() ?: 0) as Float
             movieRatingCount.text = movie.imDbRatingVotes.toString() + " Vote"
             movieGenre.text = movie.genres
             movieDuration.text = movie.runtimeMins.toString() + " Mins"

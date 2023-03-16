@@ -22,16 +22,16 @@ data class NetworkMovie (
 
 @JsonClass(generateAdapter = true)
 data class NetworkMovieById (
-    val id: String,
-    val image: String,
-    val title: String,
-    val year: String,
-    val runtimeMins: Int,
-    val plot: String,
-    val directors: String,
-    val genres: String,
-    val imDbRating: String,
-    val imDbRatingVotes: Int,
+    val id: String? = "",
+    val image: String? = "",
+    val title: String? = "",
+    val year: String? = "",
+    val runtimeMins: Int? = 0,
+    val plot: String? = "",
+    val directors: String? = "",
+    val genres: String? = "",
+    val imDbRating: Double? = 0.0,
+    val imDbRatingVotes: Int? = 0,
     val actorList: List<Actors>
 )
 
@@ -70,11 +70,11 @@ fun MoviesResponse.asDatabaseModel(): List<MovieEntity> {
 fun NetworkMovieById.asDatabaseModel(): List<FullCastEntity> {
     return actorList.map {
         FullCastEntity(
-            id = it.id,
-            movieId = id,
-            image = it.image,
-            name = it.name,
-            asCharacter = it.asCharacter
+            id = it.id.toString(),
+            movieId = id.toString(),
+            image = it.image.toString(),
+            name = it.name.toString(),
+            asCharacter = it.asCharacter.toString()
         )
     }
 }
@@ -82,16 +82,16 @@ fun NetworkMovieById.asDatabaseModel(): List<FullCastEntity> {
 fun NetworkMovieById.asDatabaseMovieDetail(): List<MovieDetailEntity> {
     return listOf(
             MovieDetailEntity(
-            id = id,
-            image = image,
-            title = title,
-            year = year,
-            runtimeMins = runtimeMins,
-            plot = plot,
-            directors = directors,
-            genres = genres,
-            imDbRating = imDbRating,
-            imDbRatingVotes = imDbRatingVotes
+            id = id.toString(),
+            image = image.toString(),
+            title = title.toString(),
+            year = year.toString(),
+            runtimeMins = runtimeMins?:0,
+            plot = plot.toString(),
+            directors = directors.toString(),
+            genres = genres.toString(),
+            imDbRating = imDbRating?: 0.0,
+            imDbRatingVotes = imDbRatingVotes?:0
         )
     )
 }

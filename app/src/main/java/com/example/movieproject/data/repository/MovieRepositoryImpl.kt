@@ -6,7 +6,9 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
+import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
+import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.asDomainModel
 import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.remote.api.Api
@@ -32,7 +34,10 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
             }
         }
     }
-    fun getMovie(id: String) = database.movieDao.getMovieDetail(id)
+    suspend fun getMovie(id: String, context: Context): UiState<MovieDetailEntity>{
+        val movie = database.movieDao.getMovieDetail(id).first()
+        return UiState(isLoading = movie.id.isEmpty() , movie)
+    }
 
     suspend fun searchMovies(title: String): List<Movie>{
         return withContext(Dispatchers.IO) {
