@@ -27,7 +27,7 @@ interface MovieDao {
 
     //Movie Detail
     @Query("SELECT * FROM moviedetailentity WHERE id = :id")
-    fun getMovieDetail(id: String): Flow<MovieDetailEntity>
+    fun getMovieDetail(id: String): Flow<MovieDetailEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMovieDetail(fullCast: List<MovieDetailEntity>)

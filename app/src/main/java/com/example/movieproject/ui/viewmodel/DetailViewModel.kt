@@ -24,14 +24,13 @@ class DetailViewModel (
     private var _fullCast: MutableStateFlow<UiState<List<FullCastEntity>>> = MutableStateFlow(UiState(value = emptyList()))
     val fullCast: StateFlow<UiState<List<FullCastEntity>>> = _fullCast
 
-    private var _movieDetail: MutableStateFlow<UiState<MovieDetailEntity>> = MutableStateFlow(UiState(value = MovieDetailEntity()))
-    val movieDetail: StateFlow<UiState<MovieDetailEntity>> = _movieDetail
+    private var _movieDetail: MutableStateFlow<UiState<MovieDetailEntity?>?> = MutableStateFlow(UiState(value = MovieDetailEntity()))
+    val movieDetail: StateFlow<UiState<MovieDetailEntity?>?> = _movieDetail
 
     fun getFullCast(id: String, context: Context) = viewModelScope.launch {
         try {
-            fullCastRepository.insertFullCast(id, context)
             _fullCast.value = UiState(isLoading = true, value = emptyList())
-            _movieDetail.value = UiState(isLoading = true, value = MovieDetailEntity())
+            _movieDetail.value = UiState(isLoading = false, value = MovieDetailEntity())
 
             _fullCast.value = fullCastRepository.getFullCast(id, context)
             _movieDetail.value = movieRepositoryImpl.getMovie(id, context)

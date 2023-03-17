@@ -30,7 +30,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         }
         ViewModelProvider(this, DetailViewModel.Factory(activity.application))[DetailViewModel::class.java]
     }
-    private lateinit var movie: MovieDetailEntity
+    private var movie: MovieDetailEntity? = null
 
     private var _binding: FragmentDetailMovieBinding? = null
     private val binding get() = _binding!!
@@ -62,8 +62,12 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         }
         lifecycleScope.launchWhenStarted {
             viewModel.movieDetail.collect{
-                movie = it.value
-                bindMovie()
+                movie = it?.value
+                if (it == null){
+                    binding.internetConn.visibility = View.GONE
+                    binding.noInternet.visibility = View.VISIBLE
+                }else
+                    bindMovie()
             }
         }
 
@@ -77,18 +81,21 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
     private fun bindMovie() {
         binding.apply {
             context?.let {
-                Glide.with(it).load(movie.image).into(movieImage)
-                Glide.with(it).load(movie.image).into(movieIcon)
+                Glide.with(it).load(movie?.image).into(movieImage)
+                Glide.with(it).load(movie?.image).into(movieIcon)
             }
-            movieTitle.text = movie.title
-            movieYear.text = movie.year
-            movieRating.text = movie.imDbRating.toString()
-            movieRatingBar.rating = ((movie.imDbRating?.div(2))?.toFloat() ?: 0) as Float
-            movieRatingCount.text = movie.imDbRatingVotes.toString() + " Vote"
-            movieGenre.text = movie.genres
-            movieDuration.text = movie.runtimeMins.toString() + " Mins"
-            movieDirector.text = movie.directors
-            plotDesc.text = movie.plot
+            movieTitle.text = movie?.title
+            movieYear.text = movie?.year
+            movieRating.text = movie?.imDbRating.toString()
+            movieRatingBar.rating = ((movie?.imDbRating?.toFloat() ?: 0) as Float)/2
+            movieRatingCount.text = movie?.imDbRatingVotes.toString() + " Vote"
+            movieGenre.text = movie?.genres
+            movieDuration.text = movie?.runtimeMins.toString() + " Mins"
+            movieDirector.text = movie?.directors
+            plotDesc.text = movie?.plot
+
+            binding.internetConn.visibility = View.VISIBLE
+            binding.noInternet.visibility = View.GONE
         }
     }
 }

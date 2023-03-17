@@ -2,11 +2,6 @@ package com.example.movieproject.data.repository
 
 import android.content.Context
 import android.net.ConnectivityManager
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.asLiveData
-import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.asDomainModel
@@ -22,7 +17,7 @@ import kotlinx.coroutines.withContext
 
 class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository{
     private fun insertMovies(movieResponse: MoviesResponse){
-        database.movieDao.insertAllMovie(movieResponse.asDatabaseModel())
+        database.movieDao.insertAllMovie(movieResponse.asDatabaseFullCast())
     }
 
     override suspend fun getMovies(context: Context): UiState<List<Movie>>{
@@ -34,9 +29,14 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
             }
         }
     }
-    suspend fun getMovie(id: String, context: Context): UiState<MovieDetailEntity>{
-        val movie = database.movieDao.getMovieDetail(id).first()
-        return UiState(isLoading = movie.id.isEmpty() , movie)
+    suspend fun getMovie(id: String, context: Context): UiState<MovieDetailEntity?>? {
+        return withContext(Dispatchers.IO) {
+            if (checkInternet(context)) {
+                getMovieFromApi(id)
+            } else {
+                getMovieFromDb(id)
+            }
+        }
     }
 
     suspend fun searchMovies(title: String): List<Movie>{
@@ -64,5 +64,15 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
     private suspend fun getMoviesFromDb(): UiState<List<Movie>>{
         val movies = database.movieDao.getMovies().first().asDomainModel()
         return UiState(isLoading = movies.isEmpty(), movies)
+    }
+
+    private suspend fun getMovieFromApi(id: String): UiState<MovieDetailEntity?>? {
+        val response = Api.retrofitService.getFullCast(id)
+        return UiState(isLoading = response.asDatabaseMovieDetail().isEmpty(), value = response.asDatabaseMovieDetail().first())
+    }
+
+    private suspend fun getMovieFromDb(id: String): UiState<MovieDetailEntity?>? {
+        val movie = database.movieDao.getMovieDetail(id).first()
+        return movie?.id?.let { UiState(isLoading = it.isEmpty() , movie) }
     }
 }
