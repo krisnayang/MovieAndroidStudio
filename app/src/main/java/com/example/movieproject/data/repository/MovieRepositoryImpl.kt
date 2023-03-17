@@ -29,7 +29,7 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
             }
         }
     }
-    suspend fun getMovie(id: String, context: Context): UiState<MovieDetailEntity?>? {
+    override suspend fun getMovie(id: String, context: Context): UiState<MovieDetailEntity?>? {
         return withContext(Dispatchers.IO) {
             if (checkInternet(context)) {
                 getMovieFromApi(id)
@@ -39,7 +39,7 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
         }
     }
 
-    suspend fun searchMovies(title: String, context: Context): UiState<List<Movie>?>?{
+    override suspend fun searchMovies(title: String, context: Context): UiState<List<Movie>?>?{
         return withContext(Dispatchers.IO) {
             if (checkInternet(context)){
                 getMovieSearch(title)

@@ -21,7 +21,7 @@ class FullCastRepositoryImpl(private val database: MovieDatabase): FullCastRepos
         }
     }
 
-     suspend fun getFullCast(id: String, context: Context): UiState<List<FullCastEntity>>{
+     override suspend fun getFullCast(id: String, context: Context): UiState<List<FullCastEntity>>{
          return withContext(Dispatchers.IO) {
              if (checkInternet(context)) {
                  getFullCastFromApi(id)
