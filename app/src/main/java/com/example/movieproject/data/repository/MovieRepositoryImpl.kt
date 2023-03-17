@@ -39,10 +39,14 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
         }
     }
 
-    suspend fun searchMovies(title: String): List<Movie>{
+    suspend fun searchMovies(title: String, context: Context): UiState<List<Movie>?>?{
         return withContext(Dispatchers.IO) {
-            delay(3000)
-            Api.retrofitService.searchMovies(title).asList()
+            if (checkInternet(context)){
+                getMovieSearch(title)
+            }else{
+                val movies: List<Movie> = listOf()
+                UiState(false, value = movies)
+            }
         }
     }
 
@@ -74,5 +78,10 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
     private suspend fun getMovieFromDb(id: String): UiState<MovieDetailEntity?>? {
         val movie = database.movieDao.getMovieDetail(id).first()
         return movie?.id?.let { UiState(isLoading = it.isEmpty() , movie) }
+    }
+
+    private suspend fun getMovieSearch(title: String): UiState<List<Movie>?>?{
+        val response = Api.retrofitService.searchMovies(title).asList()
+        return UiState(isLoading = response.isEmpty(), response)
     }
 }

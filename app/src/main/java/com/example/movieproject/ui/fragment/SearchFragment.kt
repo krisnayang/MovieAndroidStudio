@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +23,8 @@ import com.example.movieproject.ui.adapter.MovieListAdapter
 import com.example.movieproject.ui.viewmodel.MovieViewModel
 import com.example.movieproject.ui.viewmodel.SearchViewModel
 import kotlinx.android.synthetic.main.list_item_movie.view.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
     private val viewModel: SearchViewModel by lazy {
@@ -31,6 +34,11 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         ViewModelProvider(this, SearchViewModel.Factory(activity.application))[SearchViewModel::class.java]
     }
     private var viewModelAdapter: MovieListAdapter? = null
+
+    override fun onStart() {
+        super.onStart()
+        getCurrentActivity()?.getBottomNav()?.visibility = View.VISIBLE
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,38 +53,26 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-
-//        getCurrentActivity()?.getBottomNav()?.visibility = View.VISIBLE
             binding.etSearchMovie.addTextChangedListener(object: TextWatcher{
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
                 override fun afterTextChanged(title: Editable?) {
-                    startShimmerEffect(binding)
-                    viewModel.searchMovies(title.toString())
-                    viewModel.movies.observe(viewLifecycleOwner){
-                        viewModelAdapter?.submitList(it)
-                        if (it.isNotEmpty()){
-                            stopShimmerEffect(binding)
-                        }
-                    }
+                    lifecycleScope.launch {
+                        binding.notFound.visibility = View.GONE
+                        startShimmerEffect(binding)
+                        delay(3000)
+                        viewModel.searchMovies(title.toString(), requireContext())
+                        submitData(viewModel, binding)
 
-                    viewModelAdapter = MovieListAdapter(){movie, view ->
-                        getCurrentActivity()?.getBottomNav()?.visibility = View.GONE
-                        val extra = FragmentNavigatorExtras(view.movieIcon to "big_icon")
-                        val action = SearchFragmentDirections
-                            .actionSearchFragmentToDetailMovieFragment(movie.id)
-                        findNavController().navigate(action, extra)
-                    }
-                    binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
-                        layoutManager = LinearLayoutManager(context)
-                        adapter = viewModelAdapter
+                        listItem()
+
+                        binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
+                            layoutManager = LinearLayoutManager(context)
+                            adapter = viewModelAdapter
+                        }
                     }
                 }
             })
-
-
         return binding.root
     }
 
@@ -85,8 +81,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private fun startShimmerEffect(binding: FragmentSearchBinding){
+        binding.shimmerContainer.visibility = View.VISIBLE
         binding.shimmerContainer.startShimmer()
         binding.recyclerView.visibility = View.GONE
+        binding.notFound.visibility = View.GONE
     }
 
     private fun stopShimmerEffect(binding: FragmentSearchBinding){
@@ -94,16 +92,33 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             binding.shimmerContainer.stopShimmer()
             binding.shimmerContainer.visibility = View.GONE
             binding.recyclerView.visibility = View.VISIBLE
+            binding.notFound.visibility = View.GONE
         },1000)
     }
-    inline fun View.onDebouncedListener (delay: Long = 3000L, crossinline listener: (View)->Unit) {
-        var enable = java.lang.Runnable { isEnabled = true }
-        setOnClickListener{
-            if (isEnabled) {
-                isEnabled = false
-                postDelayed(enable, delay)
-                listener(it)
+
+    private fun submitData(viewModel: SearchViewModel, binding: FragmentSearchBinding){
+        lifecycleScope.launchWhenStarted {
+            viewModel.movies.collect{
+                viewModelAdapter?.submitList(it?.value)
+                if (it?.value?.isNotEmpty() == true) {
+                    stopShimmerEffect(binding)
+                    binding.notFound.visibility = View.GONE
+                }else if (it?.value?.isEmpty() == true) {
+                    binding.recyclerView.visibility = View.GONE
+                    binding.shimmerContainer.visibility = View.GONE
+                    binding.notFound.visibility = View.VISIBLE
+                }
             }
+        }
+    }
+
+    private fun listItem(){
+        viewModelAdapter = MovieListAdapter(){movie, view ->
+            getCurrentActivity()?.getBottomNav()?.visibility = View.GONE
+            val extra = FragmentNavigatorExtras(view.movieIcon to "big_icon")
+            val action = SearchFragmentDirections
+                .actionSearchFragmentToDetailMovieFragment(movie.id)
+            findNavController().navigate(action, extra)
         }
     }
 }
