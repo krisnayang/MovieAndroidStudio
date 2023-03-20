@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -20,19 +21,18 @@ import com.example.movieproject.R
 import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
+import com.example.movieproject.ui.viewmodel.DetailViewModel
 import com.example.movieproject.ui.viewmodel.MovieViewModel
 import com.example.movieproject.ui.viewmodel.SearchViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.list_item_movie.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SearchFragment : Fragment(R.layout.fragment_search) {
-    private val viewModel: SearchViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access the viewModel after onActivityCreated()"
-        }
-        ViewModelProvider(this, SearchViewModel.Factory(activity.application))[SearchViewModel::class.java]
-    }
+
+    val viewModel by viewModels<SearchViewModel>()
     private var viewModelAdapter: MovieListAdapter? = null
 
     override fun onStart() {
@@ -53,26 +53,26 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-            binding.etSearchMovie.addTextChangedListener(object: TextWatcher{
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(title: Editable?) {
-                    lifecycleScope.launch {
-                        binding.notFound.visibility = View.GONE
-                        startShimmerEffect(binding)
-                        delay(3000)
-                        viewModel.searchMovies(title.toString(), requireContext())
-                        submitData(viewModel, binding)
+        binding.etSearchMovie.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(title: Editable?) {
+                lifecycleScope.launch {
+                    binding.notFound.visibility = View.GONE
+                    startShimmerEffect(binding)
+                    delay(3000)
+                    viewModel.searchMovies(title.toString(), requireContext())
+                    submitData(viewModel, binding)
 
-                        listItem()
+                    listItem()
 
-                        binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
-                            layoutManager = LinearLayoutManager(context)
-                            adapter = viewModelAdapter
-                        }
+                    binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
+                        layoutManager = LinearLayoutManager(context)
+                        adapter = viewModelAdapter
                     }
                 }
-            })
+            }
+        })
         return binding.root
     }
 

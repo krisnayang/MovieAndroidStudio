@@ -11,17 +11,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 
-private val BASE_URL = "https://imdb-api.com/en/API/"
-
-private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(BASE_URL)
-    .build()
-
 interface APIService {
     //k_psr6zcqm, k_w5xpu5vt, k_x7yw68hc
     @GET("MostPopularMovies/k_x7yw68hc")
@@ -32,10 +21,4 @@ interface APIService {
 
     @GET("SearchTitle/k_x7yw68hc/{title}")
     suspend fun searchMovies(@Path("title")title: String): SearchMovieResponse
-}
-
-object Api{
-    val retrofitService: APIService by lazy {
-        retrofit.create(APIService::class.java)
-    }
 }

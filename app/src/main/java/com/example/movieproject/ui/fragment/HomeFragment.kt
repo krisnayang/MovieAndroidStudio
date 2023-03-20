@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -21,23 +22,21 @@ import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
 import com.example.movieproject.ui.viewmodel.DetailViewModel
 import com.example.movieproject.ui.viewmodel.MovieViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.list_item_movie.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 
+@AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
-    private val viewModel: MovieViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access the viewModel after onActivityCreated()"
-        }
-        ViewModelProvider(this, MovieViewModel.Factory(activity.application))[MovieViewModel::class.java]
-    }
     private var viewModelAdapter: MovieListAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
+
+    val viewModel by viewModels<MovieViewModel>()
 
     override fun onStart() {
         super.onStart()

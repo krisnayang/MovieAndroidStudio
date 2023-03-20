@@ -6,16 +6,20 @@ import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.asDomainModel
 import com.example.movieproject.data.local.model.Movie
-import com.example.movieproject.data.remote.api.Api
+import com.example.movieproject.data.remote.api.APIService
 import com.example.movieproject.data.remote.remotedatasource.*
 import com.example.movieproject.ui.state.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 
-class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository{
+class MovieRepositoryImpl @Inject constructor(
+    private val database: MovieDatabase,
+    private val api: APIService
+): MovieRepository{
     private fun insertMovies(movieResponse: MoviesResponse){
         database.movieDao.insertAllMovie(movieResponse.asDatabaseFullCast())
     }
@@ -60,7 +64,7 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
     }
 
     private suspend fun getMoviesFromApi(): UiState<List<Movie>>{
-        val response = Api.retrofitService.getMovies()
+        val response = api.getMovies()
         insertMovies(response)
         return UiState(isLoading = response.asDomainModel().isEmpty(), value = response.asDomainModel())
     }
@@ -71,7 +75,7 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
     }
 
     private suspend fun getMovieFromApi(id: String): UiState<MovieDetailEntity?>? {
-        val response = Api.retrofitService.getFullCast(id)
+        val response = api.getFullCast(id)
         return UiState(isLoading = response.asDatabaseMovieDetail().isEmpty(), value = response.asDatabaseMovieDetail().first())
     }
 
@@ -81,7 +85,7 @@ class MovieRepositoryImpl (private val database: MovieDatabase): MovieRepository
     }
 
     private suspend fun getMovieSearch(title: String): UiState<List<Movie>?>?{
-        val response = Api.retrofitService.searchMovies(title).asList()
+        val response = api.searchMovies(title).asList()
         return UiState(isLoading = response.isEmpty(), response)
     }
 }

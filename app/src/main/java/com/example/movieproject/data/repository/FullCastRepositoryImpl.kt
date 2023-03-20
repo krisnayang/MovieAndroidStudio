@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
-import com.example.movieproject.data.remote.api.Api
+import com.example.movieproject.data.remote.api.APIService
 import com.example.movieproject.data.remote.remotedatasource.NetworkMovieById
 import com.example.movieproject.data.remote.remotedatasource.asDatabaseFullCast
 import com.example.movieproject.data.remote.remotedatasource.asDatabaseMovieDetail
@@ -12,8 +12,12 @@ import com.example.movieproject.ui.state.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class FullCastRepositoryImpl(private val database: MovieDatabase): FullCastRepository  {
+class FullCastRepositoryImpl @Inject constructor(
+    private val database: MovieDatabase,
+    private val api: APIService
+    ): FullCastRepository  {
     override suspend fun insertFullCast(fullCastResponse: NetworkMovieById){
         withContext(Dispatchers.IO){
             database.movieDao.insertAllFullCast(fullCastResponse.asDatabaseFullCast())
@@ -46,7 +50,7 @@ class FullCastRepositoryImpl(private val database: MovieDatabase): FullCastRepos
     }
 
     private suspend fun getFullCastFromApi(id: String): UiState<List<FullCastEntity>>{
-        val response = Api.retrofitService.getFullCast(id)
+        val response = api.getFullCast(id)
         insertFullCast(response)
         return UiState(isLoading = response.asDatabaseFullCast().isEmpty(), value = response.asDatabaseFullCast())
     }

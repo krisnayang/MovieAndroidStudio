@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -20,16 +21,13 @@ import com.example.movieproject.databinding.FragmentDetailMovieBinding
 import com.example.movieproject.ui.adapter.CastListAdapter
 import com.example.movieproject.ui.adapter.MovieListAdapter
 import com.example.movieproject.ui.viewmodel.DetailViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
     private val navigationArgs: DetailMovieFragmentArgs by navArgs()
 
-    private val viewModel: DetailViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access the viewModel after onActivityCreated()"
-        }
-        ViewModelProvider(this, DetailViewModel.Factory(activity.application))[DetailViewModel::class.java]
-    }
+    val viewModel by viewModels<DetailViewModel>()
     private var movie: MovieDetailEntity? = null
 
     private var _binding: FragmentDetailMovieBinding? = null

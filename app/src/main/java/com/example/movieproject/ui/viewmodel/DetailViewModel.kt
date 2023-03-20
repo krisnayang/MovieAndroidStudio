@@ -6,20 +6,24 @@ import androidx.lifecycle.*
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
+import com.example.movieproject.data.repository.FullCastRepository
 import com.example.movieproject.data.repository.FullCastRepositoryImpl
+import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.data.repository.MovieRepositoryImpl
 import com.example.movieproject.ui.state.UiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.IOException
+import javax.inject.Inject
 
-class DetailViewModel (
-    application: Application
-): AndroidViewModel(application){
-    private val movieRepositoryImpl = MovieRepositoryImpl(MovieDatabase.getDatabase(application))
-    private val fullCastRepository = FullCastRepositoryImpl(MovieDatabase.getDatabase(application))
+@HiltViewModel
+class DetailViewModel @Inject constructor(
+    private val movieRepository: MovieRepository,
+    private val fullCastRepository: FullCastRepository
+): ViewModel(){
 
     private var _fullCast: MutableStateFlow<UiState<List<FullCastEntity>>> = MutableStateFlow(UiState(value = emptyList()))
     val fullCast: StateFlow<UiState<List<FullCastEntity>>> = _fullCast
@@ -33,22 +37,9 @@ class DetailViewModel (
             _movieDetail.value = UiState(isLoading = false, value = MovieDetailEntity())
 
             _fullCast.value = fullCastRepository.getFullCast(id, context)
-            _movieDetail.value = movieRepositoryImpl.getMovie(id, context)
+            _movieDetail.value = movieRepository.getMovie(id, context)
         }catch (networkError: IOException) {
 
-        }
-    }
-
-    class Factory(
-        val app: Application
-    ): ViewModelProvider.Factory{
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(DetailViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return DetailViewModel(app) as T
-            }
-
-            throw IllegalArgumentException("Unknown ViewModel Class")
         }
     }
 }
