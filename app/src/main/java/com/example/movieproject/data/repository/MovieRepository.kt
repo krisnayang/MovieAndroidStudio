@@ -10,5 +10,5 @@ import kotlinx.coroutines.flow.Flow
 interface MovieRepository {
     suspend fun getMovies(): Flow<List<MovieEntity>>
     suspend fun getMovie(id: String): Flow<MovieDetailEntity?>
-    suspend fun searchMovies(title: String): UiState<List<Movie>?>?
+    suspend fun searchMovies(title: String): Flow<List<Movie>?>?
 }

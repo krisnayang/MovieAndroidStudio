@@ -47,13 +47,13 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchMovies(title: String): UiState<List<Movie>?>?{
+    override suspend fun searchMovies(title: String): Flow<List<Movie>?>?{
         return withContext(Dispatchers.IO) {
             if (checkInternet()){
                 getMovieSearch(title)
             }else{
                 val movies: List<Movie> = listOf()
-                UiState(false, value = movies)
+                flow {emit(movies) }
             }
         }
     }
@@ -88,8 +88,8 @@ class MovieRepositoryImpl @Inject constructor(
         return database.movieDao.getMovieDetail(id)
     }
 
-    private suspend fun getMovieSearch(title: String): UiState<List<Movie>?>?{
-        val response = api.searchMovies(title).asList()
-        return UiState(isLoading = response.isEmpty(), response)
+    private suspend fun getMovieSearch(title: String): Flow<List<Movie>?>? = flow{
+        emit(api.searchMovies(title).asList())
+//        return UiState(isLoading = response.isEmpty(), response)
     }
 }
