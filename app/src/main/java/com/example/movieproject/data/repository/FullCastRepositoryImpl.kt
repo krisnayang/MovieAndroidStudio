@@ -10,7 +10,7 @@ import com.example.movieproject.data.remote.remotedatasource.asDatabaseFullCast
 import com.example.movieproject.data.remote.remotedatasource.asDatabaseMovieDetail
 import com.example.movieproject.ui.state.UiState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -25,7 +25,7 @@ class FullCastRepositoryImpl @Inject constructor(
         }
     }
 
-     override suspend fun getFullCast(id: String, context: Context): UiState<List<FullCastEntity>>{
+     override suspend fun getFullCast(id: String, context: Context): Flow<UiState<List<FullCastEntity>>>{
          return withContext(Dispatchers.IO) {
              if (checkInternet(context)) {
                  getFullCastFromApi(id)
@@ -44,14 +44,17 @@ class FullCastRepositoryImpl @Inject constructor(
         return false
     }
 
-    private suspend fun getFullCastFromDB(id: String): UiState<List<FullCastEntity>>{
-        val fullCast = database.movieDao.getFullCast(id).first()
-        return UiState(isLoading = fullCast.isEmpty(), fullCast)
+    private fun getFullCastFromDB(id: String): Flow<UiState<List<FullCastEntity>>> = flow {
+        emit(UiState(isLoading = true, emptyList()))
+        database.movieDao.getFullCast(id).collect{
+            emit(UiState(it.isEmpty() , value = it))
+        }
     }
 
-    private suspend fun getFullCastFromApi(id: String): UiState<List<FullCastEntity>>{
+    private suspend fun getFullCastFromApi(id: String): Flow<UiState<List<FullCastEntity>>> = flow{
+        emit(UiState(isLoading = true, emptyList()))
         val response = api.getFullCast(id)
         insertFullCast(response)
-        return UiState(isLoading = response.asDatabaseFullCast().isEmpty(), value = response.asDatabaseFullCast())
+        emit(UiState(isLoading = response.asDatabaseFullCast().isEmpty(), value = response.asDatabaseFullCast()))
     }
 }

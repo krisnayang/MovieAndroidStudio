@@ -62,7 +62,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             viewModel.getMovieList(requireContext())
             swipeContainer.isRefreshing = false
         }
-        lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.movies.collect{
                 viewModelAdapter?.submitList(it.value)
                 if (!it.isLoading){

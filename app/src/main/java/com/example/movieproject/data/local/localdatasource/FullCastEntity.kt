@@ -9,6 +9,9 @@ import androidx.room.PrimaryKey
 import com.example.movieproject.data.local.model.Actors
 import com.example.movieproject.data.local.model.FullCast
 import com.example.movieproject.data.local.model.Movie
+import com.example.movieproject.ui.state.UiState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @Entity
 data class FullCastEntity (

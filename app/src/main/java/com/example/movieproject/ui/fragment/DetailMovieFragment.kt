@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +24,8 @@ import com.example.movieproject.ui.adapter.CastListAdapter
 import com.example.movieproject.ui.adapter.MovieListAdapter
 import com.example.movieproject.ui.viewmodel.DetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
@@ -52,28 +56,43 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         super.onViewCreated(view, savedInstanceState)
         val id = navigationArgs.id
 
-        viewModel.getFullCast(id, requireContext())
-        lifecycleScope.launchWhenStarted {
-            viewModel.fullCast.collect{
-                castAdapter?.submitList(it.value)
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            viewModel.movieDetail.collect{
-                movie = it?.value
-                if (it == null){
-                    binding.internetConn.visibility = View.GONE
-                    binding.noInternet.visibility = View.VISIBLE
-                }else
-                    bindMovie()
-            }
-        }
-
         castAdapter = CastListAdapter()
-        binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
+        binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = castAdapter
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                launch {
+                    viewModel.fullCast.collectLatest {
+                        if(it.value.isEmpty()){
+                            binding.internetConn.visibility = View.GONE
+                            binding.noInternet.visibility = View.VISIBLE
+                        }else{
+                            binding.internetConn.visibility = View.VISIBLE
+                            binding.noInternet.visibility = View.GONE
+                        }
+                        castAdapter?.submitList(it.value)
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                launch {
+                    viewModel.movieDetail.collectLatest{
+                        if(it?.isLoading == false){
+                            movie = it?.value
+                            bindMovie()
+                        }
+                    }
+                }
+            }
+        }
+        viewModel.getFullCast(id, requireContext())
+        viewModel.getMovieDetail(id, requireContext())
     }
 
     private fun bindMovie() {

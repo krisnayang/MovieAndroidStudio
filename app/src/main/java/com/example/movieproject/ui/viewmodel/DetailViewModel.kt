@@ -12,9 +12,7 @@ import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.data.repository.MovieRepositoryImpl
 import com.example.movieproject.ui.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
@@ -23,23 +21,25 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val movieRepository: MovieRepository,
     private val fullCastRepository: FullCastRepository
-): ViewModel(){
+) : ViewModel() {
 
-    private var _fullCast: MutableStateFlow<UiState<List<FullCastEntity>>> = MutableStateFlow(UiState(value = emptyList()))
+    private var _fullCast: MutableStateFlow<UiState<List<FullCastEntity>>> =
+        MutableStateFlow(UiState(value = emptyList()))
     val fullCast: StateFlow<UiState<List<FullCastEntity>>> = _fullCast
 
-    private var _movieDetail: MutableStateFlow<UiState<MovieDetailEntity?>?> = MutableStateFlow(UiState(value = MovieDetailEntity()))
+    private var _movieDetail: MutableStateFlow<UiState<MovieDetailEntity?>?> =
+        MutableStateFlow(UiState(value = MovieDetailEntity()))
     val movieDetail: StateFlow<UiState<MovieDetailEntity?>?> = _movieDetail
 
     fun getFullCast(id: String, context: Context) = viewModelScope.launch {
-        try {
-            _fullCast.value = UiState(isLoading = true, value = emptyList())
-            _movieDetail.value = UiState(isLoading = false, value = MovieDetailEntity())
-
-            _fullCast.value = fullCastRepository.getFullCast(id, context)
-            _movieDetail.value = movieRepository.getMovie(id, context)
-        }catch (networkError: IOException) {
-
+//            _fullCast.value = UiState(isLoading = true)
+        fullCastRepository.getFullCast(id, context).collectLatest {
+            _fullCast.value = it
+        }
+    }
+    fun getMovieDetail(id: String, context: Context) = viewModelScope.launch {
+        movieRepository.getMovie(id, context).collect {
+            _movieDetail.value = it
         }
     }
 }

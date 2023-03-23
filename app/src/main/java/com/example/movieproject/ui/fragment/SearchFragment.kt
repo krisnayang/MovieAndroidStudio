@@ -67,7 +67,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 searchJob?.cancel()
                 searchJob = lifecycleScope.launch {
                     viewBinding.notFound.visibility = View.GONE
-                    startShimmerEffect(viewBinding)
+                    startShimmerEffect()
                     delay(3000)
 
                     viewModel.searchMovies(s.toString(), requireContext())
@@ -98,20 +98,20 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         return (activity as? MainActivity)
     }
 
-    private fun startShimmerEffect(binding: FragmentSearchBinding) {
-        binding.shimmerContainer.visibility = View.VISIBLE
-        binding.shimmerContainer.startShimmer()
-        binding.recyclerView.visibility = View.GONE
-        binding.notFound.visibility = View.GONE
+    private fun startShimmerEffect() {
+        viewBinding.shimmerContainer.visibility = View.VISIBLE
+        viewBinding.shimmerContainer.startShimmer()
+        viewBinding.recyclerView.visibility = View.GONE
+        viewBinding.notFound.visibility = View.GONE
     }
 
-    private fun stopShimmerEffect(binding: FragmentSearchBinding) {
+    private fun stopShimmerEffect() {
         lifecycleScope.launch{
             delay(1000)
-            binding.shimmerContainer.stopShimmer()
-            binding.shimmerContainer.visibility = View.GONE
-            binding.recyclerView.visibility = View.VISIBLE
-            binding.notFound.visibility = View.GONE
+            viewBinding.shimmerContainer.stopShimmer()
+            viewBinding.shimmerContainer.visibility = View.GONE
+            viewBinding.recyclerView.visibility = View.VISIBLE
+            viewBinding.notFound.visibility = View.GONE
         }
     }
 
@@ -121,7 +121,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 viewModelAdapter?.submitList(it?.value)
 
                 if (it?.isLoading == false) {
-                    stopShimmerEffect(viewBinding)
+                    stopShimmerEffect()
                     viewBinding.notFound.visibility = View.GONE
                 } else {
                     viewBinding.recyclerView.visibility = View.GONE
