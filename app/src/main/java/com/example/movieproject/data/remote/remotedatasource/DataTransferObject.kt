@@ -57,7 +57,7 @@ fun MoviesResponse.asDomainModel(): List<Movie> {
     }
 }
 
-fun MoviesResponse.asDatabaseFullCast(): List<MovieEntity> {
+fun MoviesResponse.asDatabaseMovie(): List<MovieEntity> {
     return items.map {
         MovieEntity(
             id = it.id,

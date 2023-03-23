@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
+import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.data.local.localdatasource.asDomainModel
 import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.remote.api.APIService
@@ -24,10 +25,10 @@ class MovieRepositoryImpl @Inject constructor(
     private val api: APIService
 ): MovieRepository{
     private fun insertMovies(movieResponse: MoviesResponse){
-        database.movieDao.insertAllMovie(movieResponse.asDatabaseFullCast())
+        database.movieDao.insertAllMovie(movieResponse.asDatabaseMovie())
     }
 
-    override suspend fun getMovies(): UiState<List<Movie>>{
+    override suspend fun getMovies(): Flow<List<MovieEntity>>{
         return withContext(Dispatchers.IO) {
             if (checkInternet()) {
                 getMoviesFromApi()
@@ -66,15 +67,14 @@ class MovieRepositoryImpl @Inject constructor(
         return false
     }
 
-    private suspend fun getMoviesFromApi(): UiState<List<Movie>>{
+    private suspend fun getMoviesFromApi(): Flow<List<MovieEntity>>{
         val response = api.getMovies()
         insertMovies(response)
-        return UiState(isLoading = response.asDomainModel().isEmpty(), value = response.asDomainModel())
+        return flow{emit(response.asDatabaseMovie())}
     }
 
-    private suspend fun getMoviesFromDb(): UiState<List<Movie>>{
-        val movies = database.movieDao.getMovies().first().asDomainModel()
-        return UiState(isLoading = movies.isEmpty(), movies)
+    private fun getMoviesFromDb(): Flow<List<MovieEntity>>{
+        return database.movieDao.getMovies()
     }
 
 

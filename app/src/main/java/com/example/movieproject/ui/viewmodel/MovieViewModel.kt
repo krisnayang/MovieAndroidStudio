@@ -25,7 +25,9 @@ class MovieViewModel @Inject constructor(
 
     fun getMovieList() = viewModelScope.launch {
         _movies.value = UiState(isLoading = true, value = emptyList())
-        _movies.value = movieRepository.getMovies()
+        movieRepository.getMovies().collect{
+            _movies.value = UiState(isLoading = it.isEmpty(), it.asDomainModel())
+        }
     }
 
 }
