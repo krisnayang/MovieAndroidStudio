@@ -12,12 +12,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movieproject.R
 import com.example.movieproject.data.local.model.Movie
+import com.example.movieproject.databinding.ListItemCastBinding
 import com.example.movieproject.databinding.ListItemMovieBinding
 
 class MovieListAdapter(
     private val clickListener: (Movie, View) -> Unit
 ): ListAdapter<Movie, MovieListAdapter.MovieViewHolder>(DiffCallback){
     private lateinit var context: Context
+    private val viewBinding: ListItemMovieBinding
+        get() = _viewBinding!!
+
+    private var _viewBinding: ListItemMovieBinding? = null
 
     companion object DiffCallback: DiffUtil.ItemCallback<Movie>() {
         override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
@@ -30,13 +35,9 @@ class MovieListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        val withDataBinding: ListItemMovieBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            MovieViewHolder.LAYOUT,
-            parent,
-            false)
+        _viewBinding = ListItemMovieBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         context = parent.context
-        return MovieViewHolder(withDataBinding)
+        return MovieViewHolder(viewBinding)
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
@@ -51,13 +52,8 @@ class MovieListAdapter(
 
     class MovieViewHolder(val viewDataBinding: ListItemMovieBinding) :
         RecyclerView.ViewHolder(viewDataBinding.root) {
-        companion object {
-            @LayoutRes
-            val LAYOUT = R.layout.list_item_movie
-        }
         fun bind(movie: Movie){
-            viewDataBinding.movie = movie
-            viewDataBinding.executePendingBindings()
+            viewDataBinding.movieName.text = movie.title
         }
     }
 }

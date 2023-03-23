@@ -12,11 +12,16 @@ import com.bumptech.glide.Glide
 import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.model.Movie
+import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.databinding.ListItemCastBinding
 import com.example.movieproject.databinding.ListItemMovieBinding
 
 class CastListAdapter(): ListAdapter<FullCastEntity, CastListAdapter.CastViewHolder>(DiffCallback) {
     private lateinit var context: Context
+    private val viewBinding: ListItemCastBinding
+        get() = _viewBinding!!
+
+    private var _viewBinding: ListItemCastBinding? = null
 
     companion object DiffCallback: DiffUtil.ItemCallback<FullCastEntity>() {
         override fun areItemsTheSame(oldItem: FullCastEntity, newItem: FullCastEntity): Boolean {
@@ -29,23 +34,16 @@ class CastListAdapter(): ListAdapter<FullCastEntity, CastListAdapter.CastViewHol
     }
     class CastViewHolder(val viewDataBinding: ListItemCastBinding) :
         RecyclerView.ViewHolder(viewDataBinding.root) {
-        companion object {
-            @LayoutRes
-            val LAYOUT = R.layout.list_item_cast
-        }
         fun bind(fullCast: FullCastEntity){
-            viewDataBinding.fullcast = fullCast
+            viewDataBinding.actorName.text = fullCast.name
+            viewDataBinding.charName.text = fullCast.asCharacter
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CastViewHolder {
-        val withDataBinding: ListItemCastBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            CastViewHolder.LAYOUT,
-            parent,
-            false)
+        _viewBinding = ListItemCastBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         context = parent.context
-        return CastViewHolder(withDataBinding)
+        return CastViewHolder(viewBinding)
     }
 
     override fun onBindViewHolder(holder: CastViewHolder, position: Int) {

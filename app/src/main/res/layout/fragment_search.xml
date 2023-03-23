@@ -1,77 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="8dp"
+    android:paddingHorizontal="20dp"
     tools:context=".ui.fragment.SearchFragment">
 
-    <data>
-        <variable
-            name="viewModel"
-            type="com.example.movieproject.ui.viewmodel.SearchViewModel" />
-    </data>
+    <EditText
+        android:id="@+id/etSearchMovie"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search Movie"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/etSearchMovie">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/list_item_shimmer" />
+
+            <include layout="@layout/list_item_shimmer" />
+
+            <include layout="@layout/list_item_shimmer" />
+
+            <include layout="@layout/list_item_shimmer" />
+
+            <include layout="@layout/list_item_shimmer" />
+
+            <include layout="@layout/list_item_shimmer" />
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:transitionName="small_icon"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etSearchMovie"
+        tools:listitem="@layout/list_item_movie" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/notFound"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingHorizontal="20dp"
-        android:layout_marginTop="8dp">
+        android:visibility="visible">
 
-        <EditText
-            android:id="@+id/etSearchMovie"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
+        <ImageView
+            android:id="@+id/icNotFound"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/ic_search_off"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:hint="Search Movie"
-            android:singleLine="true"/>
-        <com.facebook.shimmer.ShimmerFrameLayout
-            android:id="@+id/shimmerContainer"
-            android:layout_width="match_parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/etSearchMovie"
-            android:visibility="gone">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <include layout="@layout/list_item_shimmer"/>
-                <include layout="@layout/list_item_shimmer"/>
-                <include layout="@layout/list_item_shimmer"/>
-                <include layout="@layout/list_item_shimmer"/>
-                <include layout="@layout/list_item_shimmer"/>
-                <include layout="@layout/list_item_shimmer"/>
-            </LinearLayout>
-        </com.facebook.shimmer.ShimmerFrameLayout>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:transitionName="small_icon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/list_item_movie"
-            app:layout_constraintTop_toBottomOf="@id/etSearchMovie"
+            android:text="No Data Found"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:visibility="gone"/>
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/notFound"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible">
-            <ImageView
-                android:id="@+id/icNotFound"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:src="@drawable/ic_search_off"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/icNotFound"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:text="No Data Found"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="@+id/icNotFound" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+</androidx.constraintlayout.widget.ConstraintLayout>

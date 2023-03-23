@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movieproject.R
+import com.example.movieproject.databinding.FragmentDetailMovieBinding
 import com.example.movieproject.databinding.FragmentHomeBinding
 import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.ui.MainActivity
@@ -32,6 +33,11 @@ import kotlinx.coroutines.flow.collect
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private var viewModelAdapter: MovieListAdapter? = null
 
+    private val viewBinding: FragmentHomeBinding
+        get() = _viewBinding!!
+
+    private var _viewBinding: FragmentHomeBinding? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
@@ -47,18 +53,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        val binding: FragmentHomeBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_home,
-            container,
-            false)
-
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewModel = viewModel
+        _viewBinding = FragmentHomeBinding.inflate(inflater, container, false)
 
         viewModel.getMovieList(requireContext())
-        binding.swipeContainer.setOnRefreshListener {
+        viewBinding.swipeContainer.setOnRefreshListener {
             viewModel.getMovieList(requireContext())
             swipeContainer.isRefreshing = false
         }
@@ -66,9 +64,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             viewModel.movies.collect{
                 viewModelAdapter?.submitList(it.value)
                 if (!it.isLoading){
-                    stopShimmerEffect(binding)
+                    stopShimmerEffect(viewBinding)
                 }else{
-                    startShimmerEffect(binding)
+                    startShimmerEffect(viewBinding)
                 }
             }
         }
@@ -79,12 +77,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 .actionHomeFragmentToDetailMovieFragment(movie.id)
             findNavController().navigate(action, extra)
         }
-        binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
+        viewBinding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewModelAdapter
         }
 
-        return binding.root
+        return viewBinding.root
     }
 
     private fun getCurrentActivity(): MainActivity?{

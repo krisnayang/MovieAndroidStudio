@@ -1,47 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".ui.fragment.HomeFragment">
 
-    <data>
-        <variable
-            name="viewModel"
-            type="com.example.movieproject.ui.viewmodel.MovieViewModel" />
-    </data>
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeContainer"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="match_parent">
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmerContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/shimmerContainer"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                android:visibility="gone">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <include layout="@layout/list_item_shimmer"/>
-                    <include layout="@layout/list_item_shimmer"/>
-                    <include layout="@layout/list_item_shimmer"/>
-                    <include layout="@layout/list_item_shimmer"/>
-                    <include layout="@layout/list_item_shimmer"/>
-                    <include layout="@layout/list_item_shimmer"/>
-                </LinearLayout>
-            </com.facebook.shimmer.ShimmerFrameLayout>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:transitionName="small_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:listitem="@layout/list_item_movie"
-                app:layout_constraintTop_toTopOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</layout>
+                android:orientation="vertical">
+
+                <include layout="@layout/list_item_shimmer" />
+
+                <include layout="@layout/list_item_shimmer" />
+
+                <include layout="@layout/list_item_shimmer" />
+
+                <include layout="@layout/list_item_shimmer" />
+
+                <include layout="@layout/list_item_shimmer" />
+
+                <include layout="@layout/list_item_shimmer" />
+            </LinearLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:transitionName="small_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/list_item_movie" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

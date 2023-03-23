@@ -15,6 +15,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieproject.R
+import com.example.movieproject.databinding.FragmentHomeBinding
 import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
@@ -47,16 +48,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _viewBinding = FragmentSearchBinding.inflate(inflater, container, false)
 
-        _viewBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_search,
-            container,
-            false
-        )
-
-        viewBinding.lifecycleOwner = viewLifecycleOwner
-        viewBinding.viewModel = viewModel
         setupUi()
         viewBinding.etSearchMovie.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
