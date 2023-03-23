@@ -91,8 +91,8 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
                 }
             }
         }
-        viewModel.getFullCast(id, requireContext())
-        viewModel.getMovieDetail(id, requireContext())
+        viewModel.getFullCast(id)
+        viewModel.getMovieDetail(id)
     }
 
     private fun bindMovie() {

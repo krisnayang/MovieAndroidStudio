@@ -6,19 +6,15 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.movieproject.R
 import com.example.movieproject.databinding.FragmentDetailMovieBinding
 import com.example.movieproject.databinding.FragmentHomeBinding
-import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
 import com.example.movieproject.ui.viewmodel.DetailViewModel
@@ -55,11 +51,35 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     ): View {
         _viewBinding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        viewModel.getMovieList(requireContext())
+        setupUi()
+
+        viewModel.getMovieList()
         viewBinding.swipeContainer.setOnRefreshListener {
-            viewModel.getMovieList(requireContext())
+            viewModel.getMovieList()
             swipeContainer.isRefreshing = false
         }
+
+        return viewBinding.root
+    }
+
+    private fun setupUi(){
+        viewModelAdapter = MovieListAdapter(){movie, view ->
+            getCurrentActivity()?.getBottomNav()?.visibility = View.GONE
+            val extra = FragmentNavigatorExtras(view.movieIcon to "big_icon")
+            val action = HomeFragmentDirections
+                .actionHomeFragmentToDetailMovieFragment(movie.id)
+            findNavController().navigate(action, extra)
+        }
+
+        setupObserver(viewModel)
+
+        viewBinding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = viewModelAdapter
+        }
+    }
+
+    private fun setupObserver(viewModel: MovieViewModel){
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.movies.collect{
                 viewModelAdapter?.submitList(it.value)
@@ -70,19 +90,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
         }
-        viewModelAdapter = MovieListAdapter(){movie, view ->
-            getCurrentActivity()?.getBottomNav()?.visibility = View.GONE
-            val extra = FragmentNavigatorExtras(view.movieIcon to "big_icon")
-            val action = HomeFragmentDirections
-                .actionHomeFragmentToDetailMovieFragment(movie.id)
-            findNavController().navigate(action, extra)
-        }
-        viewBinding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = viewModelAdapter
-        }
-
-        return viewBinding.root
     }
 
     private fun getCurrentActivity(): MainActivity?{

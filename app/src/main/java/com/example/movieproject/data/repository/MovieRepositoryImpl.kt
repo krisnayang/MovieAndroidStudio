@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 
 class MovieRepositoryImpl @Inject constructor(
+    private val context: Context,
     private val database: MovieDatabase,
     private val api: APIService
 ): MovieRepository{
@@ -26,18 +27,18 @@ class MovieRepositoryImpl @Inject constructor(
         database.movieDao.insertAllMovie(movieResponse.asDatabaseFullCast())
     }
 
-    override suspend fun getMovies(context: Context): UiState<List<Movie>>{
+    override suspend fun getMovies(): UiState<List<Movie>>{
         return withContext(Dispatchers.IO) {
-            if (checkInternet(context)) {
+            if (checkInternet()) {
                 getMoviesFromApi()
             } else {
                 getMoviesFromDb()
             }
         }
     }
-    override suspend fun getMovie(id: String, context: Context): Flow<UiState<MovieDetailEntity?>?> {
+    override suspend fun getMovie(id: String): Flow<UiState<MovieDetailEntity?>?> {
         return withContext(Dispatchers.IO) {
-            if (checkInternet(context)) {
+            if (checkInternet()) {
                 getMovieFromApi(id)
             } else {
                 getMovieFromDb(id)
@@ -45,9 +46,9 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchMovies(title: String, context: Context): UiState<List<Movie>?>?{
+    override suspend fun searchMovies(title: String): UiState<List<Movie>?>?{
         return withContext(Dispatchers.IO) {
-            if (checkInternet(context)){
+            if (checkInternet()){
                 getMovieSearch(title)
             }else{
                 val movies: List<Movie> = listOf()
@@ -56,7 +57,7 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun checkInternet(context: Context): Boolean{
+    private fun checkInternet(): Boolean{
         val connectivityManager: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         if (networkInfo != null){

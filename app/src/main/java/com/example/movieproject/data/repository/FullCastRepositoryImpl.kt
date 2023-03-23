@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FullCastRepositoryImpl @Inject constructor(
+    private val context: Context,
     private val database: MovieDatabase,
     private val api: APIService
     ): FullCastRepository  {
@@ -25,9 +26,9 @@ class FullCastRepositoryImpl @Inject constructor(
         }
     }
 
-     override suspend fun getFullCast(id: String, context: Context): Flow<UiState<List<FullCastEntity>>>{
+     override suspend fun getFullCast(id: String): Flow<UiState<List<FullCastEntity>>>{
          return withContext(Dispatchers.IO) {
-             if (checkInternet(context)) {
+             if (checkInternet()) {
                  getFullCastFromApi(id)
              } else {
                  getFullCastFromDB(id)
@@ -35,7 +36,7 @@ class FullCastRepositoryImpl @Inject constructor(
          }
     }
 
-    private fun checkInternet(context: Context): Boolean{
+    private fun checkInternet(): Boolean{
         val connectivityManager: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         if (networkInfo != null){

@@ -23,9 +23,9 @@ class MovieViewModel @Inject constructor(
     private var _movies: MutableStateFlow<UiState<List<Movie>>> = MutableStateFlow(UiState(value = emptyList()))
     val movies: MutableStateFlow<UiState<List<Movie>>> = _movies
 
-    fun getMovieList(context: Context) = viewModelScope.launch {
+    fun getMovieList() = viewModelScope.launch {
         _movies.value = UiState(isLoading = true, value = emptyList())
-        _movies.value = movieRepository.getMovies(context)
+        _movies.value = movieRepository.getMovies()
     }
 
 }

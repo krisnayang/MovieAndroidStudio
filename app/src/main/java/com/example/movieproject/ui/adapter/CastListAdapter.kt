@@ -3,18 +3,12 @@ package com.example.movieproject.ui.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.LayoutRes
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
-import com.example.movieproject.data.local.model.Movie
-import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.databinding.ListItemCastBinding
-import com.example.movieproject.databinding.ListItemMovieBinding
 
 class CastListAdapter(): ListAdapter<FullCastEntity, CastListAdapter.CastViewHolder>(DiffCallback) {
     private lateinit var context: Context
