@@ -56,12 +56,24 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         super.onViewCreated(view, savedInstanceState)
         val id = navigationArgs.id
 
+        setupUi()
+
+        viewModel.getFullCast(id)
+        viewModel.getMovieDetail(id)
+    }
+
+    private fun setupUi(){
         castAdapter = CastListAdapter()
+
+        setupObserver(viewModel)
+
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = castAdapter
         }
+    }
 
+    private fun setupObserver(viewModel: DetailViewModel){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 launch {
@@ -91,8 +103,6 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
                 }
             }
         }
-        viewModel.getFullCast(id)
-        viewModel.getMovieDetail(id)
     }
 
     private fun bindMovie() {
