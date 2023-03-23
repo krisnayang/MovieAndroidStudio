@@ -26,7 +26,7 @@ class FullCastRepositoryImpl @Inject constructor(
         }
     }
 
-     override suspend fun getFullCast(id: String): Flow<UiState<List<FullCastEntity>>>{
+     override suspend fun getFullCast(id: String): Flow<List<FullCastEntity>>{
          return withContext(Dispatchers.IO) {
              if (checkInternet()) {
                  getFullCastFromApi(id)
@@ -45,17 +45,13 @@ class FullCastRepositoryImpl @Inject constructor(
         return false
     }
 
-    private fun getFullCastFromDB(id: String): Flow<UiState<List<FullCastEntity>>> = flow {
-        emit(UiState(isLoading = true, emptyList()))
-        database.movieDao.getFullCast(id).collect{
-            emit(UiState(it.isEmpty() , value = it))
-        }
+    private fun getFullCastFromDB(id: String): Flow<List<FullCastEntity>> {
+        return database.movieDao.getFullCast(id)
     }
 
-    private suspend fun getFullCastFromApi(id: String): Flow<UiState<List<FullCastEntity>>> = flow{
-        emit(UiState(isLoading = true, emptyList()))
+    private suspend fun getFullCastFromApi(id: String): Flow<List<FullCastEntity>> = flow{
         val response = api.getFullCast(id)
         insertFullCast(response)
-        emit(UiState(isLoading = response.asDatabaseFullCast().isEmpty(), value = response.asDatabaseFullCast()))
+        emit(response.asDatabaseFullCast())
     }
 }

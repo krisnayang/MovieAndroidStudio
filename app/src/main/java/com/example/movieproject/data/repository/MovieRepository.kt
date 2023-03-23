@@ -8,6 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
     suspend fun getMovies(): UiState<List<Movie>>
-    suspend fun getMovie(id: String): Flow<UiState<MovieDetailEntity?>?>
+    suspend fun getMovie(id: String): Flow<MovieDetailEntity?>
     suspend fun searchMovies(title: String): UiState<List<Movie>?>?
 }

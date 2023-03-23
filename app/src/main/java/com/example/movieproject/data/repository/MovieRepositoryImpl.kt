@@ -36,7 +36,7 @@ class MovieRepositoryImpl @Inject constructor(
             }
         }
     }
-    override suspend fun getMovie(id: String): Flow<UiState<MovieDetailEntity?>?> {
+    override suspend fun getMovie(id: String): Flow<MovieDetailEntity?> {
         return withContext(Dispatchers.IO) {
             if (checkInternet()) {
                 getMovieFromApi(id)
@@ -78,18 +78,14 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
 
-    private suspend fun getMovieFromApi(id: String): Flow<UiState<MovieDetailEntity?>?> = flow{
-        emit(UiState(true, MovieDetailEntity()))
+    private suspend fun getMovieFromApi(id: String): Flow<MovieDetailEntity?> = flow{
         val response = api.getFullCast(id)
-        emit(UiState(isLoading = response.asDatabaseFullCast().isEmpty(), value = response.asDatabaseMovieDetail().first()))
+        emit(response.asMovieDetailEntity())
     }
 
 
-    private suspend fun getMovieFromDb(id: String): Flow<UiState<MovieDetailEntity?>?> = flow{
-        emit(UiState(true, MovieDetailEntity()))
-        database.movieDao.getMovieDetail(id).collect(){
-            emit(it?.id?.let { it1 -> UiState(isLoading = it1.isEmpty(), value = it) })
-        }
+    private fun getMovieFromDb(id: String): Flow<MovieDetailEntity?>{
+        return database.movieDao.getMovieDetail(id)
     }
 
     private suspend fun getMovieSearch(title: String): UiState<List<Movie>?>?{

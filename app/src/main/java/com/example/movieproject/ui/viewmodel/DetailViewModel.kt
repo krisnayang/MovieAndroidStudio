@@ -32,14 +32,16 @@ class DetailViewModel @Inject constructor(
     val movieDetail: StateFlow<UiState<MovieDetailEntity?>?> = _movieDetail
 
     fun getFullCast(id: String) = viewModelScope.launch {
-//            _fullCast.value = UiState(isLoading = true)
-        fullCastRepository.getFullCast(id).collectLatest {
-            _fullCast.value = it
+        _fullCast.value = UiState(isLoading = true, value = emptyList())
+        fullCastRepository.getFullCast(id).collect{
+            _fullCast.value = UiState(isLoading = it.isEmpty(), it)
         }
     }
+
     fun getMovieDetail(id: String) = viewModelScope.launch {
+        _movieDetail.value = UiState(isLoading = true, value = MovieDetailEntity())
         movieRepository.getMovie(id).collect {
-            _movieDetail.value = it
+            _movieDetail.value = it?.id?.let { it1 -> UiState(isLoading = it1.isEmpty(), it) }
         }
     }
 }

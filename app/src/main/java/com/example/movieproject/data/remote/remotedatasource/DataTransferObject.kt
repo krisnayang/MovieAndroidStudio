@@ -96,6 +96,22 @@ fun NetworkMovieById.asDatabaseMovieDetail(): List<MovieDetailEntity> {
     )
 }
 
+fun NetworkMovieById.asMovieDetailEntity(): MovieDetailEntity {
+    return MovieDetailEntity(
+            id = id.toString(),
+            image = image.toString(),
+            title = title.toString(),
+            year = year.toString(),
+            runtimeMins = runtimeMins?:0,
+            plot = plot.toString(),
+            directors = directors.toString(),
+            genres = genres.toString(),
+            imDbRating = imDbRating?: 0.0,
+            imDbRatingVotes = imDbRatingVotes?:0
+        )
+
+}
+
 fun SearchMovieResponse.asList(): List<Movie>{
     return results.map {
         Movie(

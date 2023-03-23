@@ -13,12 +13,12 @@ import retrofit2.http.Path
 
 interface APIService {
     //k_psr6zcqm, k_w5xpu5vt, k_x7yw68hc
-    @GET("MostPopularMovies/k_w5xpu5vt")
+    @GET("MostPopularMovies/k_x7yw68hc")
     suspend fun getMovies(): MoviesResponse
 
-    @GET("Title/k_w5xpu5vt/{id}")
+    @GET("Title/k_x7yw68hc/{id}")
     suspend fun getFullCast(@Path("id")id: String): NetworkMovieById
 
-    @GET("SearchTitle/k_w5xpu5vt/{title}")
+    @GET("SearchTitle/k_x7yw68hc/{title}")
     suspend fun searchMovies(@Path("title")title: String): SearchMovieResponse
 }
