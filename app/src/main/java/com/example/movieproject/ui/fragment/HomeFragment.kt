@@ -111,7 +111,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun stopShimmerEffect(binding: FragmentHomeBinding){
         lifecycleScope.launch {
-            delay(1000)
             viewBinding.shimmerContainer.stopShimmer()
             viewBinding.shimmerContainer.visibility = View.GONE
             viewBinding.recyclerView.visibility = View.VISIBLE

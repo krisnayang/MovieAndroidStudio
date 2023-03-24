@@ -56,35 +56,34 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         viewBinding.etSearchMovie.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
                 searchJob?.cancel()
                 searchJob = viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         launch {
-                            viewBinding.notFound.visibility = View.GONE
                             startShimmerEffect()
                             delay(3000)
-
                             viewModel.searchMovies(s.toString())
-                            setupObserver(viewModel)
                         }
                     }
                 }
             }
-
-            override fun afterTextChanged(s: Editable?) {}
         })
         return viewBinding.root
     }
 
     private fun setupUi() {
-        viewModelAdapter = MovieListAdapter() { movie, view ->
+        viewModelAdapter = MovieListAdapter { movie, view ->
             getCurrentActivity()?.getBottomNav()?.visibility = View.GONE
             val extra = FragmentNavigatorExtras(view.movieIcon to "big_icon")
             val action = SearchFragmentDirections
                 .actionSearchFragmentToDetailMovieFragment(movie.id)
             findNavController().navigate(action, extra)
         }
+
+        setupObserver(viewModel)
 
         viewBinding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
@@ -105,11 +104,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private fun stopShimmerEffect() {
         lifecycleScope.launch {
-            delay(1000)
             viewBinding.shimmerContainer.stopShimmer()
             viewBinding.shimmerContainer.visibility = View.GONE
-            viewBinding.recyclerView.visibility = View.VISIBLE
-            viewBinding.notFound.visibility = View.GONE
         }
     }
 
@@ -118,16 +114,25 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.movies.collect {
-                        viewModelAdapter?.submitList(it?.value)
-
-                        if (it?.isLoading == false) {
-                            stopShimmerEffect()
-                            viewBinding.notFound.visibility = View.GONE
+                        if (it?.isLoading == true) {
+                            startShimmerEffect()
                         } else {
-                            viewBinding.recyclerView.visibility = View.GONE
-                            viewBinding.shimmerContainer.visibility = View.GONE
-                            viewBinding.notFound.visibility = View.VISIBLE
+                            stopShimmerEffect()
+                            if (it?.value?.isEmpty() == true) {
+                                viewBinding.notFound.visibility = View.VISIBLE
+                            } else {
+                                viewModelAdapter?.submitList(it?.value)
+                                viewBinding.recyclerView.visibility = View.VISIBLE
+                            }
                         }
+
+//                        if (it?.isLoading == false) {
+//                            stopShimmerEffect()
+//                            viewBinding.notFound.visibility = View.GONE
+//                        } else {
+//                            viewBinding.recyclerView.visibility = View.GONE
+//                            viewBinding.notFound.visibility = View.VISIBLE
+//                        }
                     }
                 }
             }

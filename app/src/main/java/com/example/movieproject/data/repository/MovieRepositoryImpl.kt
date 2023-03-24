@@ -50,10 +50,9 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun searchMovies(title: String): Flow<List<Movie>?>{
         return withContext(Dispatchers.IO) {
             if (checkInternet()){
-                getMovieSearch(title)
+                getMovieSearchApi(title)
             }else{
-                val movies: List<Movie> = emptyList()
-                flow {emit(movies) }
+                getMovieSearchDb()
             }
         }
     }
@@ -88,7 +87,11 @@ class MovieRepositoryImpl @Inject constructor(
         return database.movieDao.getMovieDetail(id)
     }
 
-    private suspend fun getMovieSearch(title: String): Flow<List<Movie>?> = flow{
+    private suspend fun getMovieSearchApi(title: String): Flow<List<Movie>?> = flow{
         emit(api.searchMovies(title).asList())
+    }
+
+    private suspend fun getMovieSearchDb(): Flow<List<Movie>?> = flow{
+        emit(emptyList())
     }
 }
