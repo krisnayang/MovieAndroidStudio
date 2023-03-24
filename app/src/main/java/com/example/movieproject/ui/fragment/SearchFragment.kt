@@ -16,6 +16,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieproject.R
+import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.databinding.FragmentHomeBinding
 import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.ui.MainActivity
@@ -118,24 +119,20 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                             startShimmerEffect()
                         } else {
                             stopShimmerEffect()
-                            if (it?.value?.isEmpty() == true) {
-                                viewBinding.notFound.visibility = View.VISIBLE
-                            } else {
-                                viewModelAdapter?.submitList(it?.value)
-                                viewBinding.recyclerView.visibility = View.VISIBLE
-                            }
+                            dataLoaded(it?.value)
                         }
-
-//                        if (it?.isLoading == false) {
-//                            stopShimmerEffect()
-//                            viewBinding.notFound.visibility = View.GONE
-//                        } else {
-//                            viewBinding.recyclerView.visibility = View.GONE
-//                            viewBinding.notFound.visibility = View.VISIBLE
-//                        }
                     }
                 }
             }
+        }
+    }
+
+    private fun dataLoaded(data: List<Movie>?){
+        if (data?.isEmpty() == true) {
+            viewBinding.notFound.visibility = View.VISIBLE
+        } else {
+            viewModelAdapter?.submitList(data)
+            viewBinding.recyclerView.visibility = View.VISIBLE
         }
     }
 }

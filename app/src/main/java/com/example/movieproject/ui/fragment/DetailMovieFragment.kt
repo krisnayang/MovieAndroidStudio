@@ -78,12 +78,14 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 launch {
                     viewModel.fullCast.collectLatest {
-                        if(it.value.isEmpty()){
-                            binding.internetConn.visibility = View.GONE
-                            binding.noInternet.visibility = View.VISIBLE
-                        }else{
-                            binding.internetConn.visibility = View.VISIBLE
-                            binding.noInternet.visibility = View.GONE
+                        if (!it.isLoading){
+                            if (it.value.isEmpty()) {
+                                binding.internetConn.visibility = View.GONE
+                                binding.noInternet.visibility = View.VISIBLE
+                            } else {
+                                binding.internetConn.visibility = View.VISIBLE
+                                binding.noInternet.visibility = View.GONE
+                            }
                         }
                         castAdapter?.submitList(it.value)
                     }

@@ -89,9 +89,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     viewModel.movies.collect{
                         viewModelAdapter?.submitList(it.value)
                         if (!it.isLoading){
-                            stopShimmerEffect(viewBinding)
+                            stopShimmerEffect()
                         }else{
-                            startShimmerEffect(viewBinding)
+                            startShimmerEffect()
                         }
                     }
                 }
@@ -103,13 +103,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         return (activity as? MainActivity)
     }
 
-    private fun startShimmerEffect(binding: FragmentHomeBinding){
-        binding.shimmerContainer.startShimmer()
-        binding.shimmerContainer.visibility = View.VISIBLE
-        binding.recyclerView.visibility = View.GONE
+    private fun startShimmerEffect(){
+        viewBinding.shimmerContainer.startShimmer()
+        viewBinding.shimmerContainer.visibility = View.VISIBLE
+        viewBinding.recyclerView.visibility = View.GONE
     }
 
-    private fun stopShimmerEffect(binding: FragmentHomeBinding){
+    private fun stopShimmerEffect(){
         lifecycleScope.launch {
             viewBinding.shimmerContainer.stopShimmer()
             viewBinding.shimmerContainer.visibility = View.GONE
