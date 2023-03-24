@@ -8,22 +8,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
-import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.databinding.FragmentDetailMovieBinding
-import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.CastListAdapter
-import com.example.movieproject.ui.adapter.MovieListAdapter
+import com.example.movieproject.ui.state.Error
+import com.example.movieproject.ui.state.Loading
+import com.example.movieproject.ui.state.Success
 import com.example.movieproject.ui.viewmodel.DetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -59,6 +57,10 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         super.onViewCreated(view, savedInstanceState)
         val id = navigationArgs.id
 
+        binding.icBackButton.setOnClickListener { view ->
+            view.findNavController().navigateUp()
+        }
+
         setupUi()
 
         viewModel.getFullCast(id)
@@ -80,18 +82,12 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.fullCast.collectLatest {
-                        binding.icBackButton.setOnClickListener { view ->
-                            view.findNavController().navigateUp()
-                        }
-                        if (!it.isLoading){
-                            if (it.value.isEmpty()) {
-                                binding.internetConn.visibility = View.GONE
-                                binding.noInternet.visibility = View.VISIBLE
-                            } else {
-                                castAdapter?.submitList(it.value)
-                                binding.internetConn.visibility = View.VISIBLE
-                                binding.noInternet.visibility = View.GONE
+                    viewModel.fullCastNew.collectLatest { state ->
+                        when (state) {
+                            is Error -> internetDisconnect()
+                            is Loading -> binding.internetConn.visibility = View.VISIBLE
+                            is Success<*> -> {
+                                setFullCast(state.value as List<FullCastEntity>)
                             }
                         }
                     }
@@ -102,10 +98,14 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.movieDetail.collectLatest {
-                        if (it?.value?.id?.isEmpty() == false) {
-                            movie = it?.value
-                            bindMovie()
+                    viewModel.movieDetail.collectLatest { state ->
+                        when (state) {
+                            is Error -> internetDisconnect()
+                            is Loading -> binding.internetConn.visibility = View.VISIBLE
+                            is Success<*> -> {
+                                setMovieDetail(state.value as MovieDetailEntity?)
+                            }
+                            else -> internetDisconnect()
                         }
                     }
                 }
@@ -134,7 +134,29 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         }
     }
 
-    private fun getCurrentActivity(): MainActivity? {
-        return (activity as? MainActivity)
+    private fun internetConnect(fullCast: List<FullCastEntity>){
+        castAdapter?.submitList(fullCast)
+        binding.internetConn.visibility = View.VISIBLE
+        binding.noInternet.visibility = View.GONE
+    }
+
+    private fun internetDisconnect(){
+        binding.internetConn.visibility = View.GONE
+        binding.noInternet.visibility = View.VISIBLE
+    }
+
+    private fun setFullCast(fullCast: List<FullCastEntity>) {
+        if (fullCast.isEmpty()) {
+            internetDisconnect()
+        } else {
+            internetConnect(fullCast)
+        }
+    }
+
+    private fun setMovieDetail(movieDetail: MovieDetailEntity?) {
+        if (movieDetail?.id?.isNotEmpty() == true) {
+            movie = movieDetail
+            bindMovie()
+        }
     }
 }
