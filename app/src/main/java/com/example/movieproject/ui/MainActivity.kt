@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //menampilkan fragment dan juga bottom navigation bar
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

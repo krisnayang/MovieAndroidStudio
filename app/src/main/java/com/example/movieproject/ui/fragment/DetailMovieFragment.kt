@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,7 @@ import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.databinding.FragmentDetailMovieBinding
+import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.CastListAdapter
 import com.example.movieproject.ui.adapter.MovieListAdapter
 import com.example.movieproject.ui.viewmodel.DetailViewModel
@@ -31,7 +33,7 @@ import kotlinx.coroutines.launch
 class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
     private val navigationArgs: DetailMovieFragmentArgs by navArgs()
 
-    val viewModel by viewModels<DetailViewModel>()
+    private val viewModel by viewModels<DetailViewModel>()
     private var movie: MovieDetailEntity? = null
 
     private var _binding: FragmentDetailMovieBinding? = null
@@ -44,7 +46,8 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val animation = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.slide_bottom)
+        val animation = TransitionInflater.from(requireContext())
+            .inflateTransition(android.R.transition.slide_bottom)
         sharedElementEnterTransition = animation
         sharedElementReturnTransition = animation
 
@@ -62,7 +65,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         viewModel.getMovieDetail(id)
     }
 
-    private fun setupUi(){
+    private fun setupUi() {
         castAdapter = CastListAdapter()
 
         setupObserver(viewModel)
@@ -73,31 +76,34 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         }
     }
 
-    private fun setupObserver(viewModel: DetailViewModel){
+    private fun setupObserver(viewModel: DetailViewModel) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.fullCast.collectLatest {
+                        binding.icBackButton.setOnClickListener { view ->
+                            view.findNavController().navigateUp()
+                        }
                         if (!it.isLoading){
                             if (it.value.isEmpty()) {
                                 binding.internetConn.visibility = View.GONE
                                 binding.noInternet.visibility = View.VISIBLE
                             } else {
+                                castAdapter?.submitList(it.value)
                                 binding.internetConn.visibility = View.VISIBLE
                                 binding.noInternet.visibility = View.GONE
                             }
                         }
-                        castAdapter?.submitList(it.value)
                     }
                 }
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.movieDetail.collectLatest{
-                        if(it?.isLoading == false){
+                    viewModel.movieDetail.collectLatest {
+                        if (it?.value?.id?.isEmpty() == false) {
                             movie = it?.value
                             bindMovie()
                         }
@@ -116,7 +122,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             movieTitle.text = movie?.title
             movieYear.text = movie?.year
             movieRating.text = movie?.imDbRating.toString()
-            movieRatingBar.rating = ((movie?.imDbRating?.toFloat() ?: 0) as Float)/2
+            movieRatingBar.rating = ((movie?.imDbRating?.toFloat() ?: 0) as Float) / 2
             movieRatingCount.text = movie?.imDbRatingVotes.toString() + " Vote"
             movieGenre.text = movie?.genres
             movieDuration.text = movie?.runtimeMins.toString() + " Mins"
@@ -126,5 +132,9 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             binding.internetConn.visibility = View.VISIBLE
             binding.noInternet.visibility = View.GONE
         }
+    }
+
+    private fun getCurrentActivity(): MainActivity? {
+        return (activity as? MainActivity)
     }
 }
