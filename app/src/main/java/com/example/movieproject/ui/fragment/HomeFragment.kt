@@ -8,7 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +26,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.list_item_movie.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -38,7 +41,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    val viewModel by viewModels<MovieViewModel>()
+    private val viewModel by viewModels<MovieViewModel>()
 
     override fun onStart() {
         super.onStart()
@@ -80,13 +83,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setupObserver(viewModel: MovieViewModel){
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.movies.collect{
-                viewModelAdapter?.submitList(it.value)
-                if (!it.isLoading){
-                    stopShimmerEffect(viewBinding)
-                }else{
-                    startShimmerEffect(viewBinding)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.movies.collect{
+                        viewModelAdapter?.submitList(it.value)
+                        if (!it.isLoading){
+                            stopShimmerEffect(viewBinding)
+                        }else{
+                            startShimmerEffect(viewBinding)
+                        }
+                    }
                 }
             }
         }
@@ -103,10 +110,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun stopShimmerEffect(binding: FragmentHomeBinding){
-        Handler(Looper.getMainLooper()).postDelayed({
-            binding.shimmerContainer.stopShimmer()
-            binding.shimmerContainer.visibility = View.GONE
-            binding.recyclerView.visibility = View.VISIBLE
-        },1000)
+        lifecycleScope.launch {
+            delay(1000)
+            viewBinding.shimmerContainer.stopShimmer()
+            viewBinding.shimmerContainer.visibility = View.GONE
+            viewBinding.recyclerView.visibility = View.VISIBLE
+        }
     }
 }

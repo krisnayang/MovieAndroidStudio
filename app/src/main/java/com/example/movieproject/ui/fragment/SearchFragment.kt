@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.list_item_movie.view.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -53,18 +56,23 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         viewBinding.etSearchMovie.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchJob?.cancel()
-                searchJob = lifecycleScope.launch {
-                    viewBinding.notFound.visibility = View.GONE
-                    startShimmerEffect()
-                    delay(3000)
+                searchJob = viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        launch {
+                            viewBinding.notFound.visibility = View.GONE
+                            startShimmerEffect()
+                            delay(3000)
 
-                    viewModel.searchMovies(s.toString())
+                            viewModel.searchMovies(s.toString())
+                            setupObserver(viewModel)
+                        }
+                    }
                 }
             }
+
+            override fun afterTextChanged(s: Editable?) {}
         })
         return viewBinding.root
     }
@@ -77,8 +85,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 .actionSearchFragmentToDetailMovieFragment(movie.id)
             findNavController().navigate(action, extra)
         }
-
-        setupObserver(viewModel)
 
         viewBinding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
@@ -98,7 +104,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private fun stopShimmerEffect() {
-        lifecycleScope.launch{
+        lifecycleScope.launch {
             delay(1000)
             viewBinding.shimmerContainer.stopShimmer()
             viewBinding.shimmerContainer.visibility = View.GONE
@@ -108,20 +114,23 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private fun setupObserver(viewModel: SearchViewModel) {
-        lifecycleScope.launch {
-            viewModel.movies.collect {
-                viewModelAdapter?.submitList(it?.value)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.movies.collect {
+                        viewModelAdapter?.submitList(it?.value)
 
-                if (it?.isLoading == false) {
-                    stopShimmerEffect()
-                    viewBinding.notFound.visibility = View.GONE
-                } else {
-                    viewBinding.recyclerView.visibility = View.GONE
-                    viewBinding.shimmerContainer.visibility = View.GONE
-                    viewBinding.notFound.visibility = View.VISIBLE
+                        if (it?.isLoading == false) {
+                            stopShimmerEffect()
+                            viewBinding.notFound.visibility = View.GONE
+                        } else {
+                            viewBinding.recyclerView.visibility = View.GONE
+                            viewBinding.shimmerContainer.visibility = View.GONE
+                            viewBinding.notFound.visibility = View.VISIBLE
+                        }
+                    }
                 }
             }
         }
     }
-
 }

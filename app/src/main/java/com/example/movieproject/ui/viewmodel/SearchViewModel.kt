@@ -2,6 +2,7 @@ package com.example.movieproject.ui.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.view.View
 import androidx.lifecycle.*
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.local.model.Movie
@@ -27,7 +28,7 @@ class SearchViewModel @Inject constructor(
 
     fun searchMovies(title: String) = viewModelScope.launch {
         movieRepository.searchMovies(title)?.collect{
-            _movies.value = UiState(it?.isEmpty() == true, it)
+            _movies.value = UiState(it.isNullOrEmpty(), it)
         }
     }
 }
