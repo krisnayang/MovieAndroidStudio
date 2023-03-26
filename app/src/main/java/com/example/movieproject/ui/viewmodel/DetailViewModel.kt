@@ -31,23 +31,25 @@ class DetailViewModel @Inject constructor(
 
     fun getFullCast(id: String) = viewModelScope.launch {
         _fullCastNew.value = Loading
-        fullCastRepository.getFullCast(id).collect{
-            try {
+        try {
+            fullCastRepository.getFullCast(id).collect {
                 _fullCastNew.value = Success(value = it)
-            } catch (e: Exception) {
-                _fullCastNew.value = Error(errorMessage = e.toString())
             }
+        } catch (e: Exception) {
+            _fullCastNew.value = Error(errorMessage = e.toString())
         }
+
     }
 
     fun getMovieDetail(id: String) = viewModelScope.launch {
         _movieDetail.value = Loading
-        movieRepository.getMovie(id).collect {
-            try {
+        try {
+            movieRepository.getMovie(id).collect {
                 _movieDetail.value = Success(value = it)
-            } catch (e: Exception) {
-                _movieDetail.value = Error(errorMessage = e.toString())
             }
+        } catch (e: Exception) {
+            _movieDetail.value = Error(errorMessage = e.toString())
         }
     }
+
 }

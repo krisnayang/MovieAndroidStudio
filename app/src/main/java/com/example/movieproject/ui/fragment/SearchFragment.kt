@@ -21,6 +21,9 @@ import com.example.movieproject.databinding.FragmentHomeBinding
 import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
+import com.example.movieproject.ui.state.Error
+import com.example.movieproject.ui.state.Loading
+import com.example.movieproject.ui.state.Success
 import com.example.movieproject.ui.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.list_item_movie.view.*
@@ -101,6 +104,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         viewBinding.shimmerContainer.startShimmer()
         viewBinding.recyclerView.visibility = View.GONE
         viewBinding.notFound.visibility = View.GONE
+        viewBinding.errorFound.visibility = View.GONE
     }
 
     private fun stopShimmerEffect() {
@@ -114,12 +118,14 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.movies.collect {
-                        if (it?.isLoading == true) {
-                            startShimmerEffect()
-                        } else {
-                            stopShimmerEffect()
-                            dataLoaded(it?.value)
+                    viewModel.moviesNew.collect {state ->
+                        when (state) {
+                            is Error -> errorFound()
+                            is Loading -> startShimmerEffect()
+                            is Success<*> -> {
+                                stopShimmerEffect()
+                                dataLoaded(state.value as List<Movie>?)
+                            }
                         }
                     }
                 }
@@ -130,9 +136,16 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     private fun dataLoaded(data: List<Movie>?){
         if (data?.isEmpty() == true) {
             viewBinding.notFound.visibility = View.VISIBLE
+            viewBinding.errorFound.visibility = View.GONE
         } else {
             viewModelAdapter?.submitList(data)
             viewBinding.recyclerView.visibility = View.VISIBLE
+            viewBinding.errorFound.visibility = View.GONE
         }
+    }
+
+    private fun errorFound(){
+        stopShimmerEffect()
+        viewBinding.errorFound.visibility = View.VISIBLE
     }
 }

@@ -5,9 +5,14 @@ import android.content.Context
 import android.view.View
 import androidx.lifecycle.*
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
+import com.example.movieproject.data.local.localdatasource.asDomainModel
 import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.data.repository.MovieRepositoryImpl
+import com.example.movieproject.ui.state.Error
+import com.example.movieproject.ui.state.Loading
+import com.example.movieproject.ui.state.NewUiState
+import com.example.movieproject.ui.state.Success
 import com.example.movieproject.ui.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,14 +27,19 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
-    private var _movies: MutableStateFlow<UiState<List<Movie>?>?> =
-        MutableStateFlow(UiState(isLoading = false, value = emptyList()))
-    val movies: StateFlow<UiState<List<Movie>?>?> = _movies
+    private var _moviesNew: MutableStateFlow<NewUiState> =
+        MutableStateFlow(Loading)
+    val moviesNew: StateFlow<NewUiState> = _moviesNew
 
     fun searchMovies(title: String) = viewModelScope.launch {
-        _movies.value = UiState(isLoading = true, value = emptyList())
-        movieRepository.searchMovies(title)?.collect{
-            _movies.value = UiState(isLoading = false, value = it)
+        _moviesNew.value = Loading
+        try {
+            movieRepository.searchMovies(title)?.collect {
+                _moviesNew.value = Success(value = it)
+            }
+        } catch (e: Exception) {
+            _moviesNew.value = Error(errorMessage = e.toString())
         }
+
     }
 }

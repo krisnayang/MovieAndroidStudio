@@ -84,7 +84,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
                 launch {
                     viewModel.fullCastNew.collectLatest { state ->
                         when (state) {
-                            is Error -> internetDisconnect()
+                            is Error -> errorFound()
                             is Loading -> binding.internetConn.visibility = View.VISIBLE
                             is Success<*> -> {
                                 setFullCast(state.value as List<FullCastEntity>)
@@ -100,7 +100,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
                 launch {
                     viewModel.movieDetail.collectLatest { state ->
                         when (state) {
-                            is Error -> internetDisconnect()
+                            is Error -> errorFound()
                             is Loading -> binding.internetConn.visibility = View.VISIBLE
                             is Success<*> -> {
                                 setMovieDetail(state.value as MovieDetailEntity?)
@@ -131,6 +131,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
 
             binding.internetConn.visibility = View.VISIBLE
             binding.noInternet.visibility = View.GONE
+            binding.errorFound.visibility = View.GONE
         }
     }
 
@@ -138,11 +139,19 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         castAdapter?.submitList(fullCast)
         binding.internetConn.visibility = View.VISIBLE
         binding.noInternet.visibility = View.GONE
+        binding.errorFound.visibility = View.GONE
     }
 
     private fun internetDisconnect(){
         binding.internetConn.visibility = View.GONE
         binding.noInternet.visibility = View.VISIBLE
+        binding.errorFound.visibility = View.GONE
+    }
+
+    private fun errorFound(){
+        binding.internetConn.visibility = View.GONE
+        binding.noInternet.visibility = View.GONE
+        binding.errorFound.visibility = View.VISIBLE
     }
 
     private fun setFullCast(fullCast: List<FullCastEntity>) {

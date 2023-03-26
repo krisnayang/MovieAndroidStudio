@@ -1,8 +1,6 @@
 package com.example.movieproject.ui.fragment
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,17 +13,17 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieproject.R
-import com.example.movieproject.databinding.FragmentDetailMovieBinding
+import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.databinding.FragmentHomeBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
-import com.example.movieproject.ui.viewmodel.DetailViewModel
+import com.example.movieproject.ui.state.Error
+import com.example.movieproject.ui.state.Loading
+import com.example.movieproject.ui.state.Success
 import com.example.movieproject.ui.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.list_item_movie.view.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -86,12 +84,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.movies.collect{
-                        viewModelAdapter?.submitList(it.value)
-                        if (!it.isLoading){
-                            stopShimmerEffect()
-                        }else{
-                            startShimmerEffect()
+                    viewModel.movies.collect{ state ->
+                        when (state) {
+                            is Error -> errorFound()
+                            is Loading -> startShimmerEffect()
+                            is Success<*> -> {
+                                stopShimmerEffect()
+                                viewModelAdapter?.submitList(state.value as List<Movie>)
+                            }
                         }
                     }
                 }
@@ -107,6 +107,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewBinding.shimmerContainer.startShimmer()
         viewBinding.shimmerContainer.visibility = View.VISIBLE
         viewBinding.recyclerView.visibility = View.GONE
+        viewBinding.errorFound.visibility = View.GONE
     }
 
     private fun stopShimmerEffect(){
@@ -114,6 +115,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             viewBinding.shimmerContainer.stopShimmer()
             viewBinding.shimmerContainer.visibility = View.GONE
             viewBinding.recyclerView.visibility = View.VISIBLE
+            viewBinding.errorFound.visibility = View.GONE
         }
+    }
+
+    private fun errorFound(){
+        viewBinding.shimmerContainer.stopShimmer()
+        viewBinding.shimmerContainer.visibility = View.GONE
+        viewBinding.recyclerView.visibility = View.GONE
+        viewBinding.errorFound.visibility = View.VISIBLE
     }
 }

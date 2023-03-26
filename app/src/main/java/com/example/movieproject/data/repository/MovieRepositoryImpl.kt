@@ -31,6 +31,7 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getMovies(): Flow<List<MovieEntity>>{
         return withContext(Dispatchers.IO) {
+//            throw NullPointerException()
             if (checkInternet()) {
                 getMoviesFromApi()
             } else {
@@ -40,6 +41,7 @@ class MovieRepositoryImpl @Inject constructor(
     }
     override suspend fun getMovie(id: String): Flow<MovieDetailEntity?> {
         return withContext(Dispatchers.IO) {
+//            throw NullPointerException()
             if (checkInternet()) {
                 getMovieFromApi(id)
             } else {
@@ -50,6 +52,7 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun searchMovies(title: String): Flow<List<Movie>?>{
         return withContext(Dispatchers.IO) {
+//            throw NullPointerException()
             if (checkInternet()){
                 getMovieSearchApi(title)
             }else{

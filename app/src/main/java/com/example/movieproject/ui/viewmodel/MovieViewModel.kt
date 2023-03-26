@@ -1,33 +1,33 @@
 package com.example.movieproject.ui.viewmodel
 
-import android.app.Application
-import android.content.Context
 import androidx.lifecycle.*
-import com.example.movieproject.data.local.localdatasource.MovieDatabase
-import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.data.local.localdatasource.asDomainModel
-import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.repository.MovieRepository
-import com.example.movieproject.data.repository.MovieRepositoryImpl
-import com.example.movieproject.ui.state.UiState
+import com.example.movieproject.ui.state.Error
+import com.example.movieproject.ui.state.Loading
+import com.example.movieproject.ui.state.NewUiState
+import com.example.movieproject.ui.state.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
     private val movieRepository: MovieRepository
-): ViewModel(){
-    private var _movies: MutableStateFlow<UiState<List<Movie>>> = MutableStateFlow(UiState(value = emptyList()))
-    val movies: MutableStateFlow<UiState<List<Movie>>> = _movies
+) : ViewModel() {
+    private var _movies: MutableStateFlow<NewUiState> = MutableStateFlow(Loading)
+    val movies: StateFlow<NewUiState> = _movies
 
     fun getMovieList() = viewModelScope.launch {
-        _movies.value = UiState(isLoading = true, value = emptyList())
-        movieRepository.getMovies().collect{
-            _movies.value = UiState(isLoading = it.isEmpty(), it.asDomainModel())
+        _movies.value = Loading
+        try {
+            movieRepository.getMovies().collect {
+                _movies.value = Success(value = it.asDomainModel())
+            }
+        } catch (e: Exception) {
+            _movies.value = Error(errorMessage = e.toString())
         }
     }
-
 }

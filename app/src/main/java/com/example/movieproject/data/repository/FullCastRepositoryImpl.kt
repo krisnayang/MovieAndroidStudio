@@ -28,6 +28,7 @@ class FullCastRepositoryImpl @Inject constructor(
 
      override suspend fun getFullCast(id: String): Flow<List<FullCastEntity>>{
          return withContext(Dispatchers.IO) {
+//             throw NullPointerException()
              if (checkInternet()) {
                  getFullCastFromApi(id)
              } else {
