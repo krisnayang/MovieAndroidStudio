@@ -1,12 +1,10 @@
 package com.example.movieproject.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
+import com.example.movieproject.data.local.localdatasource.MoviesFavourite
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -31,4 +29,16 @@ interface MovieDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMovieDetail(fullCast: List<MovieDetailEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertFavouriteMovie(favourite: MoviesFavourite)
+
+    @Query("DELETE FROM moviesfavourite WHERE id = :id")
+    fun removeFavouriteMovie(id: String)
+
+    @Query("SELECT * FROM moviesfavourite WHERE id = :id")
+    fun getFavourite(id: String): Flow<MoviesFavourite>
+
+    @Query("SELECT * FROM moviesfavourite")
+    fun getMoviesFavourite(): Flow<List<MoviesFavourite>>
 }

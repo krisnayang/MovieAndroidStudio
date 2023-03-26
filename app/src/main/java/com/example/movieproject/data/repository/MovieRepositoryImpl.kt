@@ -2,13 +2,11 @@ package com.example.movieproject.data.repository
 
 import android.content.Context
 import android.net.ConnectivityManager
-import com.example.movieproject.data.local.localdatasource.MovieDatabase
-import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
-import com.example.movieproject.data.local.localdatasource.MovieEntity
-import com.example.movieproject.data.local.localdatasource.asDomainModel
+import com.example.movieproject.data.local.localdatasource.*
 import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.remote.api.APIService
 import com.example.movieproject.data.remote.remotedatasource.*
+import com.example.movieproject.ui.fragment.FavouriteMovies
 import com.example.movieproject.ui.state.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -29,6 +27,18 @@ class MovieRepositoryImpl @Inject constructor(
         database.movieDao.insertAllMovie(movieResponse.asDatabaseMovie())
     }
 
+    override suspend fun insertFavourite(favourite: MoviesFavourite){
+        withContext(Dispatchers.IO){
+            database.movieDao.insertFavouriteMovie(favourite)
+        }
+    }
+
+    override suspend fun removeFavouriteMovie(id: String){
+        withContext(Dispatchers.IO){
+            database.movieDao.removeFavouriteMovie(id)
+        }
+    }
+
     override suspend fun getMovies(): Flow<List<MovieEntity>>{
         return withContext(Dispatchers.IO) {
 //            throw NullPointerException()
@@ -47,6 +57,17 @@ class MovieRepositoryImpl @Inject constructor(
             } else {
                 getMovieFromDb(id)
             }
+        }
+    }
+
+    override suspend fun getFavouriteMovies(): Flow<List<MoviesFavourite>> {
+        return withContext(Dispatchers.IO){
+            database.movieDao.getMoviesFavourite()
+        }
+    }
+    override suspend fun getFavouriteMovie(id: String): Flow<MoviesFavourite> {
+        return withContext(Dispatchers.IO) {
+            getFavouriteFromDb(id)
         }
     }
 
@@ -80,7 +101,6 @@ class MovieRepositoryImpl @Inject constructor(
         return database.movieDao.getMovies()
     }
 
-
     private suspend fun getMovieFromApi(id: String): Flow<MovieDetailEntity?> = flow{
         val response = api.getFullCast(id)
         emit(response.asMovieDetailEntity())
@@ -89,6 +109,10 @@ class MovieRepositoryImpl @Inject constructor(
 
     private fun getMovieFromDb(id: String): Flow<MovieDetailEntity?>{
         return database.movieDao.getMovieDetail(id)
+    }
+
+    private fun getFavouriteFromDb(id: String): Flow<MoviesFavourite>{
+        return database.movieDao.getFavourite(id)
     }
 
     private suspend fun getMovieSearchApi(title: String): Flow<List<Movie>?> = flow{

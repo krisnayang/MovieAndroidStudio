@@ -5,6 +5,7 @@ import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -50,6 +51,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         sharedElementReturnTransition = animation
 
         _binding = FragmentDetailMovieBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -63,8 +65,21 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
 
         setupUi()
 
+        viewModel.getFavouriteMovie(id)
         viewModel.getFullCast(id)
         viewModel.getMovieDetail(id)
+
+        binding.favourite.setOnCheckedChangeListener { it, _ ->
+            if( it.isChecked){
+                viewModel.insertFavourite(
+                    movie!!.id,
+                    movie?.title,
+                    movie?.image,
+                )
+            }else{
+                viewModel.removeFavourite(movie!!.id)
+            }
+        }
     }
 
     private fun setupUi() {
@@ -104,6 +119,23 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
                             is Loading -> binding.internetConn.visibility = View.VISIBLE
                             is Success<*> -> {
                                 setMovieDetail(state.value as MovieDetailEntity?)
+                            }
+                            else -> internetDisconnect()
+                        }
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.favouriteMovie.collectLatest { state ->
+                        when (state) {
+                            is Error -> errorFound()
+                            is Loading -> binding.internetConn.visibility = View.VISIBLE
+                            is Success<*> -> {
+//                                binding.favourite.setChecked(true)
                             }
                             else -> internetDisconnect()
                         }

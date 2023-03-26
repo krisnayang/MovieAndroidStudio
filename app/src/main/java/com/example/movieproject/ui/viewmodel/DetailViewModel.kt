@@ -2,6 +2,7 @@ package com.example.movieproject.ui.viewmodel
 
 import androidx.lifecycle.*
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
+import com.example.movieproject.data.local.localdatasource.MoviesFavourite
 import com.example.movieproject.data.repository.FullCastRepository
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.ui.state.Loading
@@ -24,10 +25,25 @@ class DetailViewModel @Inject constructor(
         MutableStateFlow(Loading)
     val fullCastNew: StateFlow<NewUiState> = _fullCastNew
 
-
     private var _movieDetail: MutableStateFlow<NewUiState?> =
         MutableStateFlow(Loading)
     val movieDetail: StateFlow<NewUiState?> = _movieDetail
+
+    private var _favouriteMovie: MutableStateFlow<NewUiState?> =
+        MutableStateFlow(Loading)
+    val favouriteMovie: StateFlow<NewUiState?> = _favouriteMovie
+
+    fun insertFavourite(id: String, image: String?, title: String?){
+        viewModelScope.launch{
+            movieRepository.insertFavourite(MoviesFavourite(id, image, title))
+        }
+    }
+
+    fun removeFavourite(id: String){
+        viewModelScope.launch{
+            movieRepository.removeFavouriteMovie(id)
+        }
+    }
 
     fun getFullCast(id: String) = viewModelScope.launch {
         _fullCastNew.value = Loading
@@ -49,6 +65,17 @@ class DetailViewModel @Inject constructor(
             }
         } catch (e: Exception) {
             _movieDetail.value = Error(errorMessage = e.toString())
+        }
+    }
+
+    fun getFavouriteMovie(id: String) = viewModelScope.launch {
+        _favouriteMovie.value = Loading
+        try {
+            movieRepository.getFavouriteMovie(id).collect {
+                _favouriteMovie.value = Success(value = it)
+            }
+        } catch (e: Exception) {
+            _favouriteMovie.value = Error(errorMessage = e.toString())
         }
     }
 

@@ -15,10 +15,14 @@
             app:destination="@id/detailMovieFragment" />
     </fragment>
     <fragment
-        android:id="@+id/infoFragment"
-        android:name="com.example.movieproject.ui.fragment.InfoFragment"
+        android:id="@+id/favouriteFragment"
+        android:name="com.example.movieproject.ui.fragment.FavouriteMovies"
         android:label="fragment_info"
-        tools:layout="@layout/fragment_info" />
+        tools:layout="@layout/fragment_favourite" >
+        <action
+            android:id="@+id/action_infoFragment_to_detailMovieFragment"
+            app:destination="@id/detailMovieFragment" />
+    </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.movieproject.ui.fragment.SearchFragment"
