@@ -90,7 +90,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             is Loading -> startShimmerEffect()
                             is Success<*> -> {
                                 stopShimmerEffect()
-                                viewModelAdapter?.submitList(state.value as List<Movie>)
+                                dataLoaded(state.value as List<Movie>)
                             }
                         }
                     }
@@ -103,11 +103,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         return (activity as? MainActivity)
     }
 
+    private fun dataLoaded(data: List<Movie>?){
+        if (data?.isEmpty() == true) {
+            viewBinding.noDataFound.visibility = View.VISIBLE
+        } else {
+            viewModelAdapter?.submitList(data)
+            viewBinding.recyclerView.visibility = View.VISIBLE
+            viewBinding.noDataFound.visibility = View.GONE
+        }
+    }
+
     private fun startShimmerEffect(){
         viewBinding.shimmerContainer.startShimmer()
         viewBinding.shimmerContainer.visibility = View.VISIBLE
         viewBinding.recyclerView.visibility = View.GONE
         viewBinding.errorFound.visibility = View.GONE
+        viewBinding.noDataFound.visibility = View.GONE
     }
 
     private fun stopShimmerEffect(){
@@ -124,5 +135,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewBinding.shimmerContainer.visibility = View.GONE
         viewBinding.recyclerView.visibility = View.GONE
         viewBinding.errorFound.visibility = View.VISIBLE
+        viewBinding.noDataFound.visibility = View.GONE
     }
 }

@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
+import com.example.movieproject.data.local.localdatasource.MoviesFavourite
 import com.example.movieproject.databinding.FragmentDetailMovieBinding
 import com.example.movieproject.ui.adapter.CastListAdapter
 import com.example.movieproject.ui.state.Error
@@ -68,18 +69,6 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         viewModel.getFavouriteMovie(id)
         viewModel.getFullCast(id)
         viewModel.getMovieDetail(id)
-
-        binding.favourite.setOnCheckedChangeListener { it, _ ->
-            if( it.isChecked){
-                viewModel.insertFavourite(
-                    movie!!.id,
-                    movie?.title,
-                    movie?.image,
-                )
-            }else{
-                viewModel.removeFavourite(movie!!.id)
-            }
-        }
     }
 
     private fun setupUi() {
@@ -135,7 +124,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
                             is Error -> errorFound()
                             is Loading -> binding.internetConn.visibility = View.VISIBLE
                             is Success<*> -> {
-//                                binding.favourite.setChecked(true)
+                                binding.favourite.isChecked = !(state.value as MoviesFavourite?)?.id.isNullOrEmpty()
                             }
                             else -> internetDisconnect()
                         }
@@ -161,9 +150,21 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             movieDirector.text = movie?.directors
             plotDesc.text = movie?.plot
 
-            binding.internetConn.visibility = View.VISIBLE
-            binding.noInternet.visibility = View.GONE
-            binding.errorFound.visibility = View.GONE
+            internetConn.visibility = View.VISIBLE
+            noInternet.visibility = View.GONE
+            errorFound.visibility = View.GONE
+
+            favourite.setOnCheckedChangeListener { it, _ ->
+                if( it.isChecked){
+                    viewModel.insertFavourite(
+                        movie!!.id,
+                        movie?.title,
+                        movie?.image,
+                    )
+                }else{
+                    viewModel.removeFavourite(movie!!.id)
+                }
+            }
         }
     }
 

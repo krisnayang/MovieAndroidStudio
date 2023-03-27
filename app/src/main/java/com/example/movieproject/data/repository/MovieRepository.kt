@@ -12,7 +12,7 @@ interface MovieRepository {
     suspend fun getMovies(): Flow<List<MovieEntity>>
     suspend fun getMovie(id: String): Flow<MovieDetailEntity?>
 
-    suspend fun getFavouriteMovie(id: String): Flow<MoviesFavourite>
+    suspend fun getFavouriteMovie(id: String): Flow<MoviesFavourite?>
 
     suspend fun searchMovies(title: String): Flow<List<Movie>?>?
 

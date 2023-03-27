@@ -111,6 +111,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         lifecycleScope.launch {
             viewBinding.shimmerContainer.stopShimmer()
             viewBinding.shimmerContainer.visibility = View.GONE
+            viewBinding.errorFound.visibility = View.GONE
         }
     }
 
@@ -136,11 +137,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     private fun dataLoaded(data: List<Movie>?){
         if (data?.isEmpty() == true) {
             viewBinding.notFound.visibility = View.VISIBLE
-            viewBinding.errorFound.visibility = View.GONE
         } else {
             viewModelAdapter?.submitList(data)
             viewBinding.recyclerView.visibility = View.VISIBLE
-            viewBinding.errorFound.visibility = View.GONE
+            viewBinding.notFound.visibility = View.GONE
         }
     }
 

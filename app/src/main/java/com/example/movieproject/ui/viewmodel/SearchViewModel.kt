@@ -28,7 +28,7 @@ class SearchViewModel @Inject constructor(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
     private var _moviesNew: MutableStateFlow<NewUiState> =
-        MutableStateFlow(Loading)
+        MutableStateFlow(Success<List<Movie>>(emptyList()))
     val moviesNew: StateFlow<NewUiState> = _moviesNew
 
     fun searchMovies(title: String) = viewModelScope.launch {

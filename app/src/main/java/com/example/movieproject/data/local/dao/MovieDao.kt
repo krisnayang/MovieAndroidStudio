@@ -37,7 +37,7 @@ interface MovieDao {
     fun removeFavouriteMovie(id: String)
 
     @Query("SELECT * FROM moviesfavourite WHERE id = :id")
-    fun getFavourite(id: String): Flow<MoviesFavourite>
+    fun getFavourite(id: String): Flow<MoviesFavourite?>
 
     @Query("SELECT * FROM moviesfavourite")
     fun getMoviesFavourite(): Flow<List<MoviesFavourite>>
