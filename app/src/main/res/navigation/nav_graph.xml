@@ -17,10 +17,10 @@
     <fragment
         android:id="@+id/favouriteFragment"
         android:name="com.example.movieproject.ui.fragment.FavouriteMovies"
-        android:label="fragment_info"
-        tools:layout="@layout/fragment_favourite" >
+        android:label="fragment_favourite"
+        tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_infoFragment_to_detailMovieFragment"
+            android:id="@+id/action_homeFragment_to_detailMovieFragment"
             app:destination="@id/detailMovieFragment" />
     </fragment>
     <fragment

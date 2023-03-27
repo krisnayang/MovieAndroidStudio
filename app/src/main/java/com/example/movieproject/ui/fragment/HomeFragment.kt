@@ -106,10 +106,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun dataLoaded(data: List<Movie>?){
         if (data?.isEmpty() == true) {
             viewBinding.noDataFound.visibility = View.VISIBLE
+            viewBinding.noDataFavorite.visibility = View.GONE
         } else {
             viewModelAdapter?.submitList(data)
             viewBinding.recyclerView.visibility = View.VISIBLE
             viewBinding.noDataFound.visibility = View.GONE
+            viewBinding.noDataFavorite.visibility = View.GONE
         }
     }
 
@@ -119,6 +121,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewBinding.recyclerView.visibility = View.GONE
         viewBinding.errorFound.visibility = View.GONE
         viewBinding.noDataFound.visibility = View.GONE
+        viewBinding.noDataFavorite.visibility = View.GONE
     }
 
     private fun stopShimmerEffect(){
@@ -127,6 +130,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             viewBinding.shimmerContainer.visibility = View.GONE
             viewBinding.recyclerView.visibility = View.VISIBLE
             viewBinding.errorFound.visibility = View.GONE
+            viewBinding.noDataFavorite.visibility = View.GONE
         }
     }
 
@@ -136,5 +140,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewBinding.recyclerView.visibility = View.GONE
         viewBinding.errorFound.visibility = View.VISIBLE
         viewBinding.noDataFound.visibility = View.GONE
+        viewBinding.noDataFavorite.visibility = View.GONE
     }
 }

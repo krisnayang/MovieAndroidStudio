@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieproject.R
 import com.example.movieproject.data.local.model.Movie
-import com.example.movieproject.databinding.FragmentFavouriteBinding
 import com.example.movieproject.databinding.FragmentHomeBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
@@ -22,20 +21,19 @@ import com.example.movieproject.ui.state.Error
 import com.example.movieproject.ui.state.Loading
 import com.example.movieproject.ui.state.Success
 import com.example.movieproject.ui.viewmodel.FavouriteViewModel
-import com.example.movieproject.ui.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.list_item_movie.view.*
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class FavouriteMovies : Fragment(R.layout.fragment_favourite) {
+class FavouriteMovies : Fragment(R.layout.fragment_home) {
     private var viewModelAdapter: MovieListAdapter? = null
 
-    private val viewBinding: FragmentFavouriteBinding
+    private val viewBinding: FragmentHomeBinding
         get() = _viewBinding!!
 
-    private var _viewBinding: FragmentFavouriteBinding? = null
+    private var _viewBinding: FragmentHomeBinding? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,7 +49,7 @@ class FavouriteMovies : Fragment(R.layout.fragment_favourite) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _viewBinding = FragmentFavouriteBinding.inflate(inflater, container, false)
+        _viewBinding = FragmentHomeBinding.inflate(inflater, container, false)
 
         setupUi()
 
@@ -64,8 +62,8 @@ class FavouriteMovies : Fragment(R.layout.fragment_favourite) {
         viewModelAdapter = MovieListAdapter(){movie, view ->
             getCurrentActivity()?.getBottomNav()?.visibility = View.GONE
             val extra = FragmentNavigatorExtras(view.movieIcon to "big_icon")
-            val action = FavouriteMoviesDirections
-                .actionInfoFragmentToDetailMovieFragment(movie.id)
+            val action = HomeFragmentDirections
+                .actionHomeFragmentToDetailMovieFragment(movie.id)
             findNavController().navigate(action, extra)
         }
 
@@ -105,6 +103,7 @@ class FavouriteMovies : Fragment(R.layout.fragment_favourite) {
         viewBinding.shimmerContainer.visibility = View.VISIBLE
         viewBinding.recyclerView.visibility = View.GONE
         viewBinding.errorFound.visibility = View.GONE
+        viewBinding.noDataFavorite.visibility = View.GONE
     }
 
     private fun stopShimmerEffect(){
@@ -113,6 +112,7 @@ class FavouriteMovies : Fragment(R.layout.fragment_favourite) {
             viewBinding.shimmerContainer.visibility = View.GONE
             viewBinding.recyclerView.visibility = View.VISIBLE
             viewBinding.errorFound.visibility = View.GONE
+            viewBinding.noDataFavorite.visibility = View.GONE
         }
     }
 
@@ -121,14 +121,17 @@ class FavouriteMovies : Fragment(R.layout.fragment_favourite) {
         viewBinding.shimmerContainer.visibility = View.GONE
         viewBinding.recyclerView.visibility = View.GONE
         viewBinding.errorFound.visibility = View.VISIBLE
+        viewBinding.noDataFavorite.visibility = View.GONE
     }
 
     private fun dataLoaded(data: List<Movie>?){
         if (data?.isEmpty() == true) {
-            viewBinding.noDataFound.visibility = View.VISIBLE
+            viewBinding.noDataFound.visibility = View.GONE
+            viewBinding.noDataFavorite.visibility = View.VISIBLE
         } else {
             viewModelAdapter?.submitList(data)
             viewBinding.noDataFound.visibility = View.GONE
+            viewBinding.noDataFavorite.visibility = View.GONE
         }
     }
 }
