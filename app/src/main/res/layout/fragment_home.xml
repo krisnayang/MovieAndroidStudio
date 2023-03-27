@@ -65,8 +65,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Oops! Something's Wrong Here"
-                android:textSize="24dp"
+                android:text="@string/oops_something_s_wrong_here"
+                android:textSize="@dimen/sp_24"
                 app:layout_constraintTop_toBottomOf="@+id/errorImage"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>

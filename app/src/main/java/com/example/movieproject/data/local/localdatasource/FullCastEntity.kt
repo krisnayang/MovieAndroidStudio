@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.map
 @Entity
 data class FullCastEntity (
     @PrimaryKey val id: String,
+    // I think we can remove non null for kotlin usage, can find other usage and remove it
     @NonNull @ColumnInfo(name = "movieId") val movieId: String,
     @NonNull @ColumnInfo(name = "image") val image: String,
     @NonNull @ColumnInfo(name = "name") val name: String,
