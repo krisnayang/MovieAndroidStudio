@@ -5,7 +5,7 @@ import com.example.movieproject.data.local.localdatasource.asDomainModel
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.ui.state.Error
 import com.example.movieproject.ui.state.Loading
-import com.example.movieproject.ui.state.NewUiState
+import com.example.movieproject.ui.state.UiState
 import com.example.movieproject.ui.state.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +17,8 @@ import javax.inject.Inject
 class MovieViewModel @Inject constructor(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
-    private var _movies: MutableStateFlow<NewUiState> = MutableStateFlow(Loading)
-    val movies: StateFlow<NewUiState> = _movies
+    private var _movies: MutableStateFlow<UiState> = MutableStateFlow(Loading)
+    val movies: StateFlow<UiState> = _movies
 
     fun getMovieList() = viewModelScope.launch {
         _movies.value = Loading

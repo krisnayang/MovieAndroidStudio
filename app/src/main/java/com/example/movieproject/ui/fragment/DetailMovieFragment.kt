@@ -5,7 +5,6 @@ import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -34,7 +33,6 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
     private val navigationArgs: DetailMovieFragmentArgs by navArgs()
 
     private val viewModel by viewModels<DetailViewModel>()
-    private var movie: MovieDetailEntity? = null
 
     private var _binding: FragmentDetailMovieBinding? = null
     private val binding get() = _binding!!
@@ -45,9 +43,9 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val animation = TransitionInflater.from(requireContext())
-            .inflateTransition(android.R.transition.slide_bottom)
+            .inflateTransition(android.R.transition.move)
         sharedElementEnterTransition = animation
         sharedElementReturnTransition = animation
 
@@ -60,7 +58,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         super.onViewCreated(view, savedInstanceState)
         val id = navigationArgs.id
 
-        binding.icBackButton.setOnClickListener { view ->
+        binding.icBackButton.setOnClickListener {
             view.findNavController().navigateUp()
         }
 
@@ -134,21 +132,21 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         }
     }
 
-    private fun bindMovie() {
+    private fun bindMovie(movie: MovieDetailEntity) {
         binding.apply {
             context?.let {
-                Glide.with(it).load(movie?.image).into(movieImage)
-                Glide.with(it).load(movie?.image).into(movieIcon)
+                Glide.with(it).load(movie.image).into(movieImage)
+                Glide.with(it).load(movie.image).into(movieIcon)
             }
-            movieTitle.text = movie?.title
-            movieYear.text = movie?.year
-            movieRating.text = movie?.imDbRating.toString()
-            movieRatingBar.rating = ((movie?.imDbRating?.toFloat() ?: 0) as Float) / 2
-            movieRatingCount.text = movie?.imDbRatingVotes.toString() + " Vote"
-            movieGenre.text = movie?.genres
-            movieDuration.text = movie?.runtimeMins.toString() + " Mins"
-            movieDirector.text = movie?.directors
-            plotDesc.text = movie?.plot
+            movieTitle.text = movie.title
+            movieYear.text = movie.year
+            movieRating.text = movie.imDbRating.toString()
+            movieRatingBar.rating = ((movie.imDbRating?.toFloat() ?: 0) as Float) / 2
+            movieRatingCount.text = resources.getString(R.string.total_vote, movie.imDbRatingVotes.toString())
+            movieGenre.text = movie.genres
+            movieDuration.text = resources.getString(R.string.time_mins, movie.runtimeMins.toString())
+            movieDirector.text = movie.directors
+            plotDesc.text = movie.plot
 
             internetConn.visibility = View.VISIBLE
             noInternet.visibility = View.GONE
@@ -157,12 +155,12 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             favourite.setOnCheckedChangeListener { it, _ ->
                 if( it.isChecked){
                     viewModel.insertFavourite(
-                        movie!!.id,
-                        movie?.title,
-                        movie?.image,
+                        movie.id,
+                        movie.title,
+                        movie.image,
                     )
                 }else{
-                    viewModel.removeFavourite(movie!!.id)
+                    viewModel.removeFavourite(movie.id)
                 }
             }
         }
@@ -197,8 +195,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
 
     private fun setMovieDetail(movieDetail: MovieDetailEntity?) {
         if (movieDetail?.id?.isNotEmpty() == true) {
-            movie = movieDetail
-            bindMovie()
+            bindMovie(movieDetail)
         }
     }
 }

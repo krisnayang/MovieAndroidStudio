@@ -5,22 +5,18 @@ import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.remote.model.Actors
-import com.squareup.moshi.JsonClass
 
 
-@JsonClass(generateAdapter = true)
 data class MoviesResponse(
     val items: List<NetworkMovie>
 )
 
-@JsonClass(generateAdapter = true)
 data class NetworkMovie (
     val id: String,
     val title: String,
     val image: String,
 )
 
-@JsonClass(generateAdapter = true)
 data class NetworkMovieById (
     val id: String? = "",
     val image: String? = "",
@@ -35,27 +31,15 @@ data class NetworkMovieById (
     val actorList: List<Actors>
 )
 
-@JsonClass(generateAdapter = true)
 data class SearchMovieResponse(
     val results: List<NetworkSearch>
 )
 
-@JsonClass(generateAdapter = true)
 data class NetworkSearch (
     val id: String,
     val title: String,
     val image: String,
 )
-
-fun MoviesResponse.asDomainModel(): List<Movie> {
-    return items.map {
-        Movie(
-            id = it.id,
-            title = it.title,
-            image = it.image,
-        )
-    }
-}
 
 fun MoviesResponse.asDatabaseMovie(): List<MovieEntity> {
     return items.map {

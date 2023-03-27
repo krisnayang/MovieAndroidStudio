@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.map
 @Entity
 data class FullCastEntity (
     @PrimaryKey val id: String,
-    @NonNull @ColumnInfo(name = "movieId") val movieId: String,
-    @NonNull @ColumnInfo(name = "image") val image: String,
-    @NonNull @ColumnInfo(name = "name") val name: String,
-    @NonNull @ColumnInfo(name = "asCharacter") val asCharacter: String,
+    @ColumnInfo(name = "movieId") val movieId: String,
+    @ColumnInfo(name = "image") val image: String,
+    @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "asCharacter") val asCharacter: String,
 )
