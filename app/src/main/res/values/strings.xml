@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">MovieProject</string>
     <!-- TODO: Remove or change this placeholder text -->
+    // Please use string resource
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="oops_something_s_wrong_here">Oops! Something\'s Wrong Here</string>
+    <string name="sample_text">%s Vote</string>
 </resources>

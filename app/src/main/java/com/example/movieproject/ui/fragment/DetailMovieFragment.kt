@@ -34,7 +34,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
     private val navigationArgs: DetailMovieFragmentArgs by navArgs()
 
     private val viewModel by viewModels<DetailViewModel>()
-    private var movie: MovieDetailEntity? = null
+//    private var movie: MovieDetailEntity? = null
 
     private var _binding: FragmentDetailMovieBinding? = null
     private val binding get() = _binding!!
@@ -45,7 +45,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val animation = TransitionInflater.from(requireContext())
             .inflateTransition(android.R.transition.slide_bottom)
         sharedElementEnterTransition = animation
@@ -60,7 +60,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         super.onViewCreated(view, savedInstanceState)
         val id = navigationArgs.id
 
-        binding.icBackButton.setOnClickListener { view ->
+        binding.icBackButton.setOnClickListener {
             view.findNavController().navigateUp()
         }
 
@@ -134,7 +134,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         }
     }
 
-    private fun bindMovie() {
+    private fun bindMovie(movie: MovieDetailEntity) {
         binding.apply {
             context?.let {
                 Glide.with(it).load(movie?.image).into(movieImage)
@@ -144,9 +144,10 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             movieYear.text = movie?.year
             movieRating.text = movie?.imDbRating.toString()
             movieRatingBar.rating = ((movie?.imDbRating?.toFloat() ?: 0) as Float) / 2
-            movieRatingCount.text = movie?.imDbRatingVotes.toString() + " Vote"
+            movieRatingCount.text = movie.imDbRatingVotes.toString() + " Vote"
+            movieRatingCount.text = resources.getString(R.string.sample_text, movie.imDbRatingVotes.toString())
             movieGenre.text = movie?.genres
-            movieDuration.text = movie?.runtimeMins.toString() + " Mins"
+            movieDuration.text = movie.runtimeMins.toString() + " Mins"
             movieDirector.text = movie?.directors
             plotDesc.text = movie?.plot
 
@@ -157,9 +158,9 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
             favourite.setOnCheckedChangeListener { it, _ ->
                 if( it.isChecked){
                     viewModel.insertFavourite(
-                        movie!!.id,
-                        movie?.title,
-                        movie?.image,
+                        movie.id,
+                        movie.title,
+                        movie.image,
                     )
                 }else{
                     viewModel.removeFavourite(movie!!.id)
@@ -182,6 +183,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
     }
 
     private fun errorFound(){
+        Toast.makeText(context, "error message", Toast.LENGTH_LONG).show()
         binding.internetConn.visibility = View.GONE
         binding.noInternet.visibility = View.GONE
         binding.errorFound.visibility = View.VISIBLE
@@ -197,8 +199,8 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
 
     private fun setMovieDetail(movieDetail: MovieDetailEntity?) {
         if (movieDetail?.id?.isNotEmpty() == true) {
-            movie = movieDetail
-            bindMovie()
+//            movie = movieDetail
+            bindMovie(movieDetail)
         }
     }
 }

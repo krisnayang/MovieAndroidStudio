@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.databinding.ListItemCastBinding
 
+//[nit] remove unused empty constructor
 class CastListAdapter(): ListAdapter<FullCastEntity, CastListAdapter.CastViewHolder>(DiffCallback) {
     private lateinit var context: Context
     private val viewBinding: ListItemCastBinding

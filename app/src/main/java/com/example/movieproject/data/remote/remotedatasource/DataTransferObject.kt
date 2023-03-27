@@ -7,7 +7,7 @@ import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.remote.model.Actors
 import com.squareup.moshi.JsonClass
 
-
+// do we still need this annotation?
 @JsonClass(generateAdapter = true)
 data class MoviesResponse(
     val items: List<NetworkMovie>

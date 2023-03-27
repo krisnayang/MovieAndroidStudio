@@ -21,6 +21,7 @@ class FavouriteViewModel @Inject constructor(
     private var _movies: MutableStateFlow<NewUiState> = MutableStateFlow(Loading)
     val movies: StateFlow<NewUiState> = _movies
 
+    // can we use movie viewmodel instead?
     fun getMovieList() = viewModelScope.launch {
         _movies.value = Loading
         try {
