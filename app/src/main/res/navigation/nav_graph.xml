@@ -10,15 +10,25 @@
         android:name="com.example.movieproject.ui.fragment.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
+        <argument
+            android:name="type"
+            app:argType="string"
+            android:defaultValue="Home"
+            />
         <action
             android:id="@+id/action_homeFragment_to_detailMovieFragment"
             app:destination="@id/detailMovieFragment" />
     </fragment>
     <fragment
         android:id="@+id/favouriteFragment"
-        android:name="com.example.movieproject.ui.fragment.FavouriteMovies"
+        android:name="com.example.movieproject.ui.fragment.HomeFragment"
         android:label="fragment_favourite"
         tools:layout="@layout/fragment_home" >
+        <argument
+            android:name="type"
+            app:argType="string"
+            android:defaultValue="Favorite"
+            />
         <action
             android:id="@+id/action_homeFragment_to_detailMovieFragment"
             app:destination="@id/detailMovieFragment" />

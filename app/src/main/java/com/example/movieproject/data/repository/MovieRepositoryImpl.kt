@@ -6,13 +6,8 @@ import com.example.movieproject.data.local.localdatasource.*
 import com.example.movieproject.data.local.model.Movie
 import com.example.movieproject.data.remote.api.APIService
 import com.example.movieproject.data.remote.remotedatasource.*
-import com.example.movieproject.ui.fragment.FavouriteMovies
-import com.example.movieproject.ui.state.UiState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

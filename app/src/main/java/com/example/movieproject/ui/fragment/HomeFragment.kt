@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieproject.R
 import com.example.movieproject.data.local.model.Movie
@@ -28,12 +29,14 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
+    private val navigationArgs: HomeFragmentArgs by navArgs()
     private var viewModelAdapter: MovieListAdapter? = null
 
     private val viewBinding: FragmentHomeBinding
         get() = _viewBinding!!
 
     private var _viewBinding: FragmentHomeBinding? = null
+    private var type: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,14 +53,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        type = navigationArgs.type
         _viewBinding = FragmentHomeBinding.inflate(inflater, container, false)
 
         setupUi()
 
-        viewModel.getMovieList()
-        viewBinding.swipeContainer.setOnRefreshListener {
+        if (type.compareTo("Home") == 0){
             viewModel.getMovieList()
-            swipeContainer.isRefreshing = false
+            viewBinding.swipeContainer.setOnRefreshListener {
+                viewModel.getMovieList()
+                swipeContainer.isRefreshing = false
+            }
+        }else{
+            viewModel.getMoviesFavorite()
         }
 
         return viewBinding.root
@@ -84,13 +92,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.movies.collect{ state ->
-                        when (state) {
-                            is Error -> errorFound()
-                            is Loading -> startShimmerEffect()
-                            is Success<*> -> {
-                                stopShimmerEffect()
-                                dataLoaded(state.value as List<Movie>)
+                    if (type.compareTo("Home") == 0){
+                        viewModel.movies.collect{ state ->
+                            when (state) {
+                                is Error -> errorFound()
+                                is Loading -> startShimmerEffect()
+                                is Success<*> -> {
+                                    stopShimmerEffect()
+                                    dataLoaded(state.value as List<Movie>)
+                                }
+                            }
+                        }
+                    }else{
+                        viewModel.moviesFavorite.collect{ state ->
+                            when (state) {
+                                is Error -> errorFound()
+                                is Loading -> startShimmerEffect()
+                                is Success<*> -> {
+                                    stopShimmerEffect()
+                                    dataFavoriteLoaded(state.value as List<Movie>)
+                                }
                             }
                         }
                     }
@@ -115,6 +136,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    private fun dataFavoriteLoaded(data: List<Movie>?){
+        if (data?.isEmpty() == true) {
+            viewBinding.noDataFound.visibility = View.GONE
+            viewBinding.noDataFavorite.visibility = View.VISIBLE
+        } else {
+            viewModelAdapter?.submitList(data)
+            viewBinding.noDataFound.visibility = View.GONE
+            viewBinding.noDataFavorite.visibility = View.GONE
+        }
+    }
+
     private fun startShimmerEffect(){
         viewBinding.shimmerContainer.startShimmer()
         viewBinding.shimmerContainer.visibility = View.VISIBLE
@@ -127,8 +159,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun stopShimmerEffect(){
         lifecycleScope.launch {
             viewBinding.shimmerContainer.stopShimmer()
-            viewBinding.shimmerContainer.visibility = View.GONE
             viewBinding.recyclerView.visibility = View.VISIBLE
+            viewBinding.shimmerContainer.visibility = View.GONE
             viewBinding.errorFound.visibility = View.GONE
             viewBinding.noDataFavorite.visibility = View.GONE
         }
@@ -138,8 +170,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewBinding.shimmerContainer.stopShimmer()
         viewBinding.shimmerContainer.visibility = View.GONE
         viewBinding.recyclerView.visibility = View.GONE
-        viewBinding.errorFound.visibility = View.VISIBLE
         viewBinding.noDataFound.visibility = View.GONE
         viewBinding.noDataFavorite.visibility = View.GONE
+        viewBinding.errorFound.visibility = View.VISIBLE
     }
 }
