@@ -87,7 +87,7 @@ class FavouriteMovies : Fragment(R.layout.fragment_favourite) {
                             is Loading -> startShimmerEffect()
                             is Success<*> -> {
                                 stopShimmerEffect()
-                                viewModelAdapter?.submitList(state.value as List<Movie>)
+                                dataLoaded(state.value as List<Movie>)
                             }
                         }
                     }
@@ -121,5 +121,14 @@ class FavouriteMovies : Fragment(R.layout.fragment_favourite) {
         viewBinding.shimmerContainer.visibility = View.GONE
         viewBinding.recyclerView.visibility = View.GONE
         viewBinding.errorFound.visibility = View.VISIBLE
+    }
+
+    private fun dataLoaded(data: List<Movie>?){
+        if (data?.isEmpty() == true) {
+            viewBinding.noDataFound.visibility = View.VISIBLE
+        } else {
+            viewModelAdapter?.submitList(data)
+            viewBinding.noDataFound.visibility = View.GONE
+        }
     }
 }
