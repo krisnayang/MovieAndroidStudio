@@ -62,7 +62,6 @@ class MovieRepositoryImpl @Inject constructor(
     }
     override suspend fun getFavouriteMovie(id: String): Flow<MoviesFavourite?> {
         return withContext(Dispatchers.IO) {
-//            getFavouriteFromDb(id)
             database.movieDao.getFavourite(id)
         }
     }
@@ -106,10 +105,6 @@ class MovieRepositoryImpl @Inject constructor(
     private fun getMovieFromDb(id: String): Flow<MovieDetailEntity?>{
         return database.movieDao.getMovieDetail(id)
     }
-
-//    private fun getFavouriteFromDb(id: String): Flow<MoviesFavourite?>{
-//        return database.movieDao.getFavourite(id)
-//    }
 
     private suspend fun getMovieSearchApi(title: String): Flow<List<Movie>?> = flow{
         emit(api.searchMovies(title).asList())

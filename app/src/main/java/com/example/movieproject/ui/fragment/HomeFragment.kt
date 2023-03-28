@@ -164,8 +164,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             viewBinding.shimmerContainer.stopShimmer()
             viewBinding.recyclerView.visibility = View.VISIBLE
             viewBinding.shimmerContainer.visibility = View.GONE
-            viewBinding.errorFound.visibility = View.GONE
-            viewBinding.noDataFavorite.visibility = View.GONE
         }
     }
 
