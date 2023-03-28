@@ -7,6 +7,6 @@
         android:title="@string/search"
         android:icon="@drawable/ic_search"/>
     <item android:id="@+id/favouriteFragment"
-        android:title="@string/favourite"
+        android:title="@string/favorite"
         android:icon="@drawable/ic_favorite_red"/>
 </menu>

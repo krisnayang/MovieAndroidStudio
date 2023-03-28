@@ -10,8 +10,8 @@ import com.example.movieproject.data.local.model.Movie
 @Entity
 data class MovieEntity (
     @PrimaryKey val id: String,
-    @NonNull @ColumnInfo(name = "title") val title: String,
-    @NonNull @ColumnInfo(name = "image") val image: String,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "image") val image: String,
 )
 
 //Mengubah Database menjadi model

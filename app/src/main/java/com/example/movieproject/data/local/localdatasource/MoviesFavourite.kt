@@ -8,16 +8,16 @@ import com.example.movieproject.data.local.model.Movie
 
 @Entity
 data class MoviesFavourite (
-    @PrimaryKey val id: String = "",
-    @ColumnInfo(name = "title") val title: String? = "",
-    @ColumnInfo(name = "image") val image: String? = "",
+    @PrimaryKey val id: String,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "image") val image: String,
 )
 fun List<MoviesFavourite>.asDomainModel(): List<Movie> {
     return map {
         Movie(
             id = it.id,
-            title = it.title!!,
-            image = it.image!!,
+            title = it.title,
+            image = it.image,
         )
     }
 }

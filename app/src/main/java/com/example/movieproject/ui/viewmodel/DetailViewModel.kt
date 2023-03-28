@@ -27,7 +27,7 @@ class DetailViewModel @Inject constructor(
     private var _favouriteMovie: MutableStateFlow<UiState?> = MutableStateFlow(Loading)
     val favouriteMovie: StateFlow<UiState?> = _favouriteMovie
 
-    fun insertFavourite(id: String, image: String?, title: String?) {
+    fun insertFavourite(id: String, image: String, title: String) {
         viewModelScope.launch {
             movieRepository.insertFavourite(MoviesFavourite(id, image, title))
         }

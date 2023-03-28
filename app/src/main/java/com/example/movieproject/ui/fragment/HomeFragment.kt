@@ -66,6 +66,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }else{
             viewModel.getMoviesFavorite()
+            viewBinding.swipeContainer.setOnRefreshListener {
+                swipeContainer.isRefreshing = false
+            }
         }
 
         return viewBinding.root
@@ -124,8 +127,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         return (activity as? MainActivity)
     }
 
-    private fun dataLoaded(data: List<Movie>?){
-        if (data?.isEmpty() == true) {
+    private fun dataLoaded(data: List<Movie>){
+        if (data.isEmpty()) {
             viewBinding.noDataFound.visibility = View.VISIBLE
             viewBinding.noDataFavorite.visibility = View.GONE
         } else {

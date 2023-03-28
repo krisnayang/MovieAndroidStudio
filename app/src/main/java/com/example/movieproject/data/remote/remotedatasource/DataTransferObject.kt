@@ -4,8 +4,6 @@ import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.data.local.model.Movie
-import com.example.movieproject.data.remote.model.Actors
-
 
 data class MoviesResponse(
     val items: List<NetworkMovie>
@@ -31,6 +29,12 @@ data class NetworkMovieById (
     val actorList: List<Actors>
 )
 
+data class Actors(
+    val id: String? = "",
+    val image: String? = "",
+    val name: String? = "",
+    val asCharacter: String? = ""
+)
 data class SearchMovieResponse(
     val results: List<NetworkSearch>
 )
