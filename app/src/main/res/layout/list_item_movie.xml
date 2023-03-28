@@ -21,11 +21,12 @@
 
     <TextView
         android:id="@+id/movieName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textAppearance="?attr/textAppearanceHeadline6"
         app:layout_constraintStart_toEndOf="@id/movieIcon"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/movieIcon"
         tools:text="Name" />
 </androidx.constraintlayout.widget.ConstraintLayout>

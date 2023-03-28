@@ -45,7 +45,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         savedInstanceState: Bundle?
     ): View {
         val animation = TransitionInflater.from(requireContext())
-            .inflateTransition(android.R.transition.move)
+            .inflateTransition(android.R.transition.slide_bottom)
         sharedElementEnterTransition = animation
         sharedElementReturnTransition = animation
 
