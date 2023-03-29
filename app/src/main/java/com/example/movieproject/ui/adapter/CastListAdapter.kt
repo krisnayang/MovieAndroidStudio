@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.databinding.ListItemCastBinding
 
@@ -44,7 +45,10 @@ class CastListAdapter : ListAdapter<FullCastEntity, CastListAdapter.CastViewHold
 
     override fun onBindViewHolder(holder: CastViewHolder, position: Int) {
         val cast = getItem(position)
-        Glide.with(context).load(cast.image).into(holder.viewDataBinding.castImage)
+        Glide.with(context)
+            .load(cast.image)
+            .placeholder(R.drawable.ic_image)
+            .into(holder.viewDataBinding.castImage)
         holder.bind(cast)
     }
 }

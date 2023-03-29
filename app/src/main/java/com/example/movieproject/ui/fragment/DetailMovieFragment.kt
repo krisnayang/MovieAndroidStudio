@@ -135,8 +135,14 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
     private fun bindMovie(movie: MovieDetailEntity) {
         binding.apply {
             context?.let {
-                Glide.with(it).load(movie.image).into(movieImage)
-                Glide.with(it).load(movie.image).into(movieIcon)
+                Glide.with(it)
+                    .load(movie.image)
+                    .placeholder(R.drawable.ic_image)
+                    .into(movieImage)
+                Glide.with(it)
+                    .load(movie.image)
+                    .placeholder(R.drawable.ic_image)
+                    .into(movieIcon)
             }
             movieTitle.text = movie.title
             movieYear.text = movie.year

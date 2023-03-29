@@ -13,6 +13,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.movieproject.BuildConfig
 import com.example.movieproject.R
 import com.example.movieproject.data.local.model.MovieLocal
 import com.example.movieproject.databinding.FragmentHomeBinding
@@ -55,7 +56,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     ): View {
         type = navigationArgs.type
         _viewBinding = FragmentHomeBinding.inflate(inflater, container, false)
-
         setupUi()
 
         if (type.compareTo("Home") == 0){

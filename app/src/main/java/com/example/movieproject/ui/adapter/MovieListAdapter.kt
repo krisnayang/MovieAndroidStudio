@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.movieproject.R
 import com.example.movieproject.data.local.model.MovieLocal
 import com.example.movieproject.databinding.ListItemMovieBinding
 
@@ -42,7 +43,10 @@ class MovieListAdapter(
         holder.itemView.setOnClickListener{
             clickListener(movie, it)
         }
-        Glide.with(context).load(movie.image).into(holder.viewDataBinding.movieIcon)
+        Glide.with(context)
+            .load(movie.image)
+            .placeholder(R.drawable.ic_image)
+            .into(holder.viewDataBinding.movieIcon)
         holder.bind(movie)
     }
 

@@ -17,7 +17,8 @@
         android:transitionName="small_icon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/RoundedSquare" />
+        app:shapeAppearanceOverlay="@style/RoundedSquare"
+        android:src="@drawable/ic_image"/>
 
     <TextView
         android:id="@+id/movieName"

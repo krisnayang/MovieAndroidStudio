@@ -1,5 +1,6 @@
 package com.example.movieproject.di
 
+import com.example.movieproject.BuildConfig
 import com.example.movieproject.data.remote.api.APIService
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.data.repository.MovieRepositoryImpl
