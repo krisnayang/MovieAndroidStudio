@@ -3,7 +3,6 @@ package com.example.movieproject.ui.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +15,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieproject.R
-import com.example.movieproject.data.local.model.Movie
-import com.example.movieproject.databinding.FragmentHomeBinding
+import com.example.movieproject.data.local.model.MovieLocal
 import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
@@ -29,7 +27,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.list_item_movie.view.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -125,7 +122,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                             is Loading -> startShimmerEffect()
                             is Success<*> -> {
                                 stopShimmerEffect()
-                                dataLoaded(state.value as List<Movie>?)
+                                dataLoaded(state.value as List<MovieLocal>?)
                             }
                         }
                     }
@@ -134,7 +131,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
     }
 
-    private fun dataLoaded(data: List<Movie>?){
+    private fun dataLoaded(data: List<MovieLocal>?){
         if (data?.isEmpty() == true) {
             viewBinding.notFound.visibility = View.VISIBLE
         } else {

@@ -1,7 +1,7 @@
 package com.example.movieproject.ui.viewmodel
 
 import androidx.lifecycle.*
-import com.example.movieproject.data.local.model.Movie
+import com.example.movieproject.data.local.model.MovieLocal
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.ui.state.Error
 import com.example.movieproject.ui.state.Loading
@@ -18,7 +18,7 @@ class SearchViewModel @Inject constructor(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
     private var _moviesNew: MutableStateFlow<UiState> =
-        MutableStateFlow(Success<List<Movie>>(emptyList()))
+        MutableStateFlow(Success<List<MovieLocal>>(emptyList()))
     val moviesNew: StateFlow<UiState> = _moviesNew
 
     fun searchMovies(title: String) = viewModelScope.launch {

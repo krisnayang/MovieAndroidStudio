@@ -1,10 +1,9 @@
 package com.example.movieproject.data.local.localdatasource
 
-import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.movieproject.data.local.model.Movie
+import com.example.movieproject.data.local.model.MovieLocal
 
 @Entity
 data class MoviesFavourite (
@@ -12,9 +11,9 @@ data class MoviesFavourite (
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "image") val image: String,
 )
-fun List<MoviesFavourite>.asDomainModel(): List<Movie> {
+fun List<MoviesFavourite>.asDomainModel(): List<MovieLocal> {
     return map {
-        Movie(
+        MovieLocal(
             id = it.id,
             title = it.title,
             image = it.image,

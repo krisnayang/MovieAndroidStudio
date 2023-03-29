@@ -3,7 +3,7 @@ package com.example.movieproject.data.repository
 import android.content.Context
 import android.net.ConnectivityManager
 import com.example.movieproject.data.local.localdatasource.*
-import com.example.movieproject.data.local.model.Movie
+import com.example.movieproject.data.local.model.MovieLocal
 import com.example.movieproject.data.remote.api.APIService
 import com.example.movieproject.data.remote.remotedatasource.*
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +66,7 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchMovies(title: String): Flow<List<Movie>?>{
+    override suspend fun searchMovies(title: String): Flow<List<MovieLocal>?>{
         return withContext(Dispatchers.IO) {
 //            throw NullPointerException()
             if (checkInternet()){
@@ -106,11 +106,11 @@ class MovieRepositoryImpl @Inject constructor(
         return database.movieDao.getMovieDetail(id)
     }
 
-    private suspend fun getMovieSearchApi(title: String): Flow<List<Movie>?> = flow{
+    private suspend fun getMovieSearchApi(title: String): Flow<List<MovieLocal>?> = flow{
         emit(api.searchMovies(title).asList())
     }
 
-    private suspend fun getMovieSearchDb(): Flow<List<Movie>?> = flow{
+    private suspend fun getMovieSearchDb(): Flow<List<MovieLocal>?> = flow{
         emit(emptyList())
     }
 }

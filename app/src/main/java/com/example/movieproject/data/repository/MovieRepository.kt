@@ -1,11 +1,9 @@
 package com.example.movieproject.data.repository
 
-import android.content.Context
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.data.local.localdatasource.MoviesFavourite
-import com.example.movieproject.data.local.model.Movie
-import com.example.movieproject.ui.state.UiState
+import com.example.movieproject.data.local.model.MovieLocal
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
@@ -14,7 +12,7 @@ interface MovieRepository {
 
     suspend fun getFavouriteMovie(id: String): Flow<MoviesFavourite?>
 
-    suspend fun searchMovies(title: String): Flow<List<Movie>?>?
+    suspend fun searchMovies(title: String): Flow<List<MovieLocal>?>?
 
     suspend fun insertFavourite(favourite: MoviesFavourite)
 

@@ -14,7 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieproject.R
-import com.example.movieproject.data.local.model.Movie
+import com.example.movieproject.data.local.model.MovieLocal
 import com.example.movieproject.databinding.FragmentHomeBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
@@ -102,7 +102,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 is Loading -> startShimmerEffect()
                                 is Success<*> -> {
                                     stopShimmerEffect()
-                                    dataLoaded(state.value as List<Movie>)
+                                    dataLoaded(state.value as List<MovieLocal>)
                                 }
                             }
                         }
@@ -113,7 +113,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 is Loading -> startShimmerEffect()
                                 is Success<*> -> {
                                     stopShimmerEffect()
-                                    dataFavoriteLoaded(state.value as List<Movie>)
+                                    dataFavoriteLoaded(state.value as List<MovieLocal>)
                                 }
                             }
                         }
@@ -127,7 +127,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         return (activity as? MainActivity)
     }
 
-    private fun dataLoaded(data: List<Movie>){
+    private fun dataLoaded(data: List<MovieLocal>){
         if (data.isEmpty()) {
             viewBinding.noDataFound.visibility = View.VISIBLE
             viewBinding.noDataFavorite.visibility = View.GONE
@@ -139,7 +139,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    private fun dataFavoriteLoaded(data: List<Movie>?){
+    private fun dataFavoriteLoaded(data: List<MovieLocal>?){
         if (data?.isEmpty() == true) {
             viewBinding.noDataFound.visibility = View.GONE
             viewBinding.noDataFavorite.visibility = View.VISIBLE

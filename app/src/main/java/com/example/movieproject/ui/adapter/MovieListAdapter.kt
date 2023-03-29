@@ -8,26 +8,24 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.movieproject.R
-import com.example.movieproject.data.local.model.Movie
-import com.example.movieproject.databinding.ListItemCastBinding
+import com.example.movieproject.data.local.model.MovieLocal
 import com.example.movieproject.databinding.ListItemMovieBinding
 
 class MovieListAdapter(
-    private val clickListener: (Movie, View) -> Unit
-): ListAdapter<Movie, MovieListAdapter.MovieViewHolder>(DiffCallback){
+    private val clickListener: (MovieLocal, View) -> Unit
+): ListAdapter<MovieLocal, MovieListAdapter.MovieViewHolder>(DiffCallback){
     private lateinit var context: Context
     private val viewBinding: ListItemMovieBinding
         get() = _viewBinding!!
 
     private var _viewBinding: ListItemMovieBinding? = null
 
-    companion object DiffCallback: DiffUtil.ItemCallback<Movie>() {
-        override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+    companion object DiffCallback: DiffUtil.ItemCallback<MovieLocal>() {
+        override fun areItemsTheSame(oldItem: MovieLocal, newItem: MovieLocal): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+        override fun areContentsTheSame(oldItem: MovieLocal, newItem: MovieLocal): Boolean {
             return oldItem == newItem
         }
     }
@@ -50,8 +48,8 @@ class MovieListAdapter(
 
     class MovieViewHolder(val viewDataBinding: ListItemMovieBinding) :
         RecyclerView.ViewHolder(viewDataBinding.root) {
-        fun bind(movie: Movie){
-            viewDataBinding.movieName.text = movie.title
+        fun bind(movieLocal: MovieLocal){
+            viewDataBinding.movieName.text = movieLocal.title
         }
     }
 }
