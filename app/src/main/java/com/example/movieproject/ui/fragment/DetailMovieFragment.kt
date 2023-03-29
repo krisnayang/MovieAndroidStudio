@@ -13,7 +13,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
@@ -24,6 +23,7 @@ import com.example.movieproject.ui.state.Error
 import com.example.movieproject.ui.state.Loading
 import com.example.movieproject.ui.state.Success
 import com.example.movieproject.ui.viewmodel.DetailViewModel
+import com.example.movieproject.ui.wrapper.GlideWrapper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -134,16 +134,8 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
 
     private fun bindMovie(movie: MovieDetailEntity) {
         binding.apply {
-            context?.let {
-                Glide.with(it)
-                    .load(movie.image)
-                    .placeholder(R.drawable.ic_image)
-                    .into(movieImage)
-                Glide.with(it)
-                    .load(movie.image)
-                    .placeholder(R.drawable.ic_image)
-                    .into(movieIcon)
-            }
+            GlideWrapper().addImage(requireContext(), movieImage, movie.image)
+            GlideWrapper().addImage(requireContext(), movieIcon, movie.image)
             movieTitle.text = movie.title
             movieYear.text = movie.year
             movieRating.text = movie.imDbRating.toString()
