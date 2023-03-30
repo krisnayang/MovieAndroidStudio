@@ -16,6 +16,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieproject.R
 import com.example.movieproject.data.local.model.MovieLocal
+import com.example.movieproject.data.remote.network.ConnectivityObserver
+import com.example.movieproject.data.remote.network.NetworkConnectivityObserver
 import com.example.movieproject.databinding.FragmentSearchBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
@@ -27,6 +29,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.list_item_movie.view.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -41,6 +45,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         get() = _viewBinding!!
 
     private var _viewBinding: FragmentSearchBinding? = null
+
+    private lateinit var connectivityObserver: ConnectivityObserver
 
     override fun onStart() {
         super.onStart()
@@ -66,7 +72,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                         launch {
                             startShimmerEffect()
                             delay(3000)
-                            viewModel.searchMovies(s.toString())
+                            connectivityObserver = NetworkConnectivityObserver(requireContext())
+                            connectivityObserver.observe().onEach {
+                                viewModel.searchMovies(it, s.toString())
+                            }.launchIn(lifecycleScope)
                         }
                     }
                 }

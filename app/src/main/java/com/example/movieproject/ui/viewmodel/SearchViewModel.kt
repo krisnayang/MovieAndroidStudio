@@ -2,6 +2,7 @@ package com.example.movieproject.ui.viewmodel
 
 import androidx.lifecycle.*
 import com.example.movieproject.data.local.model.MovieLocal
+import com.example.movieproject.data.remote.network.ConnectivityObserver
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.ui.state.Error
 import com.example.movieproject.ui.state.Loading
@@ -21,10 +22,10 @@ class SearchViewModel @Inject constructor(
         MutableStateFlow(Success<List<MovieLocal>>(emptyList()))
     val moviesNew: StateFlow<UiState> = _moviesNew
 
-    fun searchMovies(title: String) = viewModelScope.launch {
+    fun searchMovies(network: ConnectivityObserver.Status, title: String) = viewModelScope.launch {
         _moviesNew.value = Loading
         try {
-            movieRepository.searchMovies(title)?.collect {
+            movieRepository.searchMovies(network, title)?.collect {
                 _moviesNew.value = Success(value = it)
             }
         } catch (e: Exception) {

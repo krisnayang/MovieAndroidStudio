@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.remote.api.APIService
+import com.example.movieproject.data.remote.network.ConnectivityObserver
 import com.example.movieproject.data.remote.remotedatasource.NetworkMovieById
 import com.example.movieproject.data.remote.remotedatasource.asDatabaseFullCast
 import com.example.movieproject.data.remote.remotedatasource.asDatabaseMovieDetail
@@ -26,24 +27,15 @@ class FullCastRepositoryImpl @Inject constructor(
         }
     }
 
-     override suspend fun getFullCast(id: String): Flow<List<FullCastEntity>>{
+     override suspend fun getFullCast(network: ConnectivityObserver.Status, id: String): Flow<List<FullCastEntity>>{
          return withContext(Dispatchers.IO) {
 //             throw NullPointerException()
-             if (checkInternet()) {
+             if (network.compareTo(ConnectivityObserver.Status.Available) == 0) {
                  getFullCastFromApi(id)
              } else {
                  getFullCastFromDB(id)
              }
          }
-    }
-
-    private fun checkInternet(): Boolean{
-        val connectivityManager: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        if (networkInfo != null){
-            return true
-        }
-        return false
     }
 
     private fun getFullCastFromDB(id: String): Flow<List<FullCastEntity>> {

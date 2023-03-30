@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import com.example.movieproject.data.local.localdatasource.*
 import com.example.movieproject.data.local.model.MovieLocal
 import com.example.movieproject.data.remote.api.APIService
+import com.example.movieproject.data.remote.network.ConnectivityObserver
 import com.example.movieproject.data.remote.remotedatasource.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -34,20 +35,20 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMovies(): Flow<List<MovieEntity>>{
+    override suspend fun getMovies(network: ConnectivityObserver.Status): Flow<List<MovieEntity>>{
         return withContext(Dispatchers.IO) {
 //            throw NullPointerException()
-            if (checkInternet()) {
+            if (network.compareTo(ConnectivityObserver.Status.Available) == 0) {
                 getMoviesFromApi()
             } else {
                 getMoviesFromDb()
             }
         }
     }
-    override suspend fun getMovie(id: String): Flow<MovieDetailEntity?> {
+    override suspend fun getMovie(network: ConnectivityObserver.Status, id: String): Flow<MovieDetailEntity?> {
         return withContext(Dispatchers.IO) {
 //            throw NullPointerException()
-            if (checkInternet()) {
+            if (network.compareTo(ConnectivityObserver.Status.Available) == 0) {
                 getMovieFromApi(id)
             } else {
                 getMovieFromDb(id)
@@ -66,24 +67,15 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchMovies(title: String): Flow<List<MovieLocal>?>{
+    override suspend fun searchMovies(network: ConnectivityObserver.Status, title: String): Flow<List<MovieLocal>?>{
         return withContext(Dispatchers.IO) {
 //            throw NullPointerException()
-            if (checkInternet()){
+            if (network.compareTo(ConnectivityObserver.Status.Available) == 0){
                 getMovieSearchApi(title)
             }else{
                 getMovieSearchDb()
             }
         }
-    }
-
-    private fun checkInternet(): Boolean{
-        val connectivityManager: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        if (networkInfo != null){
-            return true
-        }
-        return false
     }
 
     private suspend fun getMoviesFromApi(): Flow<List<MovieEntity>>{

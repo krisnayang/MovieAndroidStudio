@@ -2,6 +2,7 @@ package com.example.movieproject.ui.viewmodel
 
 import androidx.lifecycle.*
 import com.example.movieproject.data.local.localdatasource.asDomainModel
+import com.example.movieproject.data.remote.network.ConnectivityObserver
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.ui.state.Error
 import com.example.movieproject.ui.state.Loading
@@ -33,10 +34,10 @@ class MovieViewModel @Inject constructor(
             _moviesFavorite.value = Error(errorMessage = e.toString())
         }
     }
-    fun getMovieList() = viewModelScope.launch {
+    fun getMovieList(network: ConnectivityObserver.Status) = viewModelScope.launch {
         _movies.value = Loading
         try {
-            movieRepository.getMovies().collect {
+            movieRepository.getMovies(network).collect {
                 _movies.value = Success(value = it.asDomainModel())
             }
         } catch (e: Exception) {

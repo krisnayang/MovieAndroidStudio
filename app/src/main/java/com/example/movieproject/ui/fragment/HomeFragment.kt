@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -16,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieproject.BuildConfig
 import com.example.movieproject.R
 import com.example.movieproject.data.local.model.MovieLocal
+import com.example.movieproject.data.remote.network.ConnectivityObserver
+import com.example.movieproject.data.remote.network.NetworkConnectivityObserver
 import com.example.movieproject.databinding.FragmentHomeBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
@@ -26,6 +30,8 @@ import com.example.movieproject.ui.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.list_item_movie.view.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -38,6 +44,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private var _viewBinding: FragmentHomeBinding? = null
     private var type: String = ""
+
+    private lateinit var connectivityObserver: ConnectivityObserver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,20 +64,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     ): View {
         type = navigationArgs.type
         _viewBinding = FragmentHomeBinding.inflate(inflater, container, false)
-        setupUi()
 
-        if (type.compareTo("Home") == 0){
-            viewModel.getMovieList()
-            viewBinding.swipeContainer.setOnRefreshListener {
-                viewModel.getMovieList()
-                swipeContainer.isRefreshing = false
+        setupUi()
+        connectivityObserver = NetworkConnectivityObserver(requireContext())
+        connectivityObserver.observe().onEach {
+            if (type.compareTo("Home") == 0){
+                viewModel.getMovieList(it)
+                viewBinding.swipeContainer.setOnRefreshListener {
+                    viewModel.getMovieList(it)
+                    swipeContainer.isRefreshing = false
+                }
+            }else{
+                viewModel.getMoviesFavorite()
+                viewBinding.swipeContainer.setOnRefreshListener {
+                    swipeContainer.isRefreshing = false
+                }
             }
-        }else{
-            viewModel.getMoviesFavorite()
-            viewBinding.swipeContainer.setOnRefreshListener {
-                swipeContainer.isRefreshing = false
-            }
-        }
+        }.launchIn(lifecycleScope)
 
         return viewBinding.root
     }
@@ -143,10 +154,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         if (data?.isEmpty() == true) {
             viewBinding.noDataFound.visibility = View.GONE
             viewBinding.noDataFavorite.visibility = View.VISIBLE
+            viewBinding.errorFound.visibility = View.GONE
         } else {
             viewModelAdapter?.submitList(data)
             viewBinding.noDataFound.visibility = View.GONE
             viewBinding.noDataFavorite.visibility = View.GONE
+            viewBinding.errorFound.visibility = View.GONE
         }
     }
 

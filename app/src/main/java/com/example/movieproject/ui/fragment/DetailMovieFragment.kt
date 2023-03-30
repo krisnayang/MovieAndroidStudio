@@ -17,6 +17,8 @@ import com.example.movieproject.R
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MoviesFavourite
+import com.example.movieproject.data.remote.network.ConnectivityObserver
+import com.example.movieproject.data.remote.network.NetworkConnectivityObserver
 import com.example.movieproject.databinding.FragmentDetailMovieBinding
 import com.example.movieproject.ui.adapter.CastListAdapter
 import com.example.movieproject.ui.state.Error
@@ -25,7 +27,10 @@ import com.example.movieproject.ui.state.Success
 import com.example.movieproject.ui.viewmodel.DetailViewModel
 import com.example.movieproject.ui.wrapper.GlideWrapper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -38,6 +43,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
     private val binding get() = _binding!!
     private var castAdapter: CastListAdapter? = null
 
+    private lateinit var connectivityObserver: ConnectivityObserver
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,10 +69,12 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         }
 
         setupUi()
-
         viewModel.getFavouriteMovie(id)
-        viewModel.getFullCast(id)
-        viewModel.getMovieDetail(id)
+        connectivityObserver = NetworkConnectivityObserver(requireContext())
+        connectivityObserver.observe().onEach {
+            viewModel.getFullCast(it, id)
+            viewModel.getMovieDetail(it, id)
+        }.launchIn(lifecycleScope)
     }
 
     private fun setupUi() {

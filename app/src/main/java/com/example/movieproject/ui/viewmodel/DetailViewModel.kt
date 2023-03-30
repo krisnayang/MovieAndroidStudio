@@ -2,6 +2,7 @@ package com.example.movieproject.ui.viewmodel
 
 import androidx.lifecycle.*
 import com.example.movieproject.data.local.localdatasource.MoviesFavourite
+import com.example.movieproject.data.remote.network.ConnectivityObserver
 import com.example.movieproject.data.repository.FullCastRepository
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.ui.state.Loading
@@ -39,10 +40,10 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getFullCast(id: String) = viewModelScope.launch {
+    fun getFullCast(network: ConnectivityObserver.Status, id: String) = viewModelScope.launch {
         _fullCastNew.value = Loading
         try {
-            fullCastRepository.getFullCast(id).collect {
+            fullCastRepository.getFullCast(network, id).collect {
                 _fullCastNew.value = Success(value = it)
             }
         } catch (e: Exception) {
@@ -51,10 +52,10 @@ class DetailViewModel @Inject constructor(
 
     }
 
-    fun getMovieDetail(id: String) = viewModelScope.launch {
+    fun getMovieDetail(network: ConnectivityObserver.Status, id: String) = viewModelScope.launch {
         _movieDetail.value = Loading
         try {
-            movieRepository.getMovie(id).collect {
+            movieRepository.getMovie(network, id).collect {
                 _movieDetail.value = Success(value = it)
             }
         } catch (e: Exception) {
