@@ -166,7 +166,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
                         movie.image,
                     )
                 }else{
-                    viewModel.removeFavourite(movie.id)
+                    viewModel.removeFavourite(MoviesFavourite(movie.id, movie.title, movie.image))
                 }
             }
         }

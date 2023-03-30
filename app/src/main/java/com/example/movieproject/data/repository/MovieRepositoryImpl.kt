@@ -29,9 +29,9 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun removeFavouriteMovie(id: String){
+    override suspend fun removeFavouriteMovie(movie: MoviesFavourite){
         withContext(Dispatchers.IO){
-            database.movieDao.removeFavouriteMovie(id)
+            database.movieDao.removeFavouriteMovie(movie.id)
         }
     }
 

@@ -7,9 +7,9 @@ import com.example.movieproject.data.local.model.MovieLocal
 
 @Entity
 data class MoviesFavourite (
-    @PrimaryKey val id: String,
-    @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "image") val image: String,
+    @PrimaryKey var id: String = "",
+    @ColumnInfo(name = "title") var title: String = "",
+    @ColumnInfo(name = "image") var image: String = "",
 )
 fun List<MoviesFavourite>.asDomainModel(): List<MovieLocal> {
     return map {

@@ -1,6 +1,7 @@
 package com.example.movieproject.ui.viewmodel
 
 import androidx.lifecycle.*
+import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MoviesFavourite
 import com.example.movieproject.data.remote.network.ConnectivityObserver
 import com.example.movieproject.data.repository.FullCastRepository
@@ -34,9 +35,9 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun removeFavourite(id: String) {
+    fun removeFavourite(movie: MoviesFavourite) {
         viewModelScope.launch {
-            movieRepository.removeFavouriteMovie(id)
+            movieRepository.removeFavouriteMovie(movie)
         }
     }
 
