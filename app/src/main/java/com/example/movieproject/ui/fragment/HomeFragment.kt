@@ -15,11 +15,8 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.movieproject.BuildConfig
 import com.example.movieproject.R
 import com.example.movieproject.data.local.model.MovieLocal
-import com.example.movieproject.data.remote.network.ConnectivityObserver
-import com.example.movieproject.data.remote.network.NetworkConnectivityObserver
 import com.example.movieproject.databinding.FragmentHomeBinding
 import com.example.movieproject.ui.MainActivity
 import com.example.movieproject.ui.adapter.MovieListAdapter
@@ -30,8 +27,6 @@ import com.example.movieproject.ui.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.list_item_movie.view.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -44,8 +39,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private var _viewBinding: FragmentHomeBinding? = null
     private var type: String = ""
-
-    private lateinit var connectivityObserver: ConnectivityObserver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,21 +59,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         _viewBinding = FragmentHomeBinding.inflate(inflater, container, false)
 
         setupUi()
-        connectivityObserver = NetworkConnectivityObserver(requireContext())
-        connectivityObserver.observe().onEach {
-            if (type.compareTo("Home") == 0){
-                viewModel.getMovieList(it)
-                viewBinding.swipeContainer.setOnRefreshListener {
-                    viewModel.getMovieList(it)
-                    swipeContainer.isRefreshing = false
-                }
-            }else{
-                viewModel.getMoviesFavorite()
-                viewBinding.swipeContainer.setOnRefreshListener {
-                    swipeContainer.isRefreshing = false
-                }
+        if (type.compareTo("Home") == 0){
+            viewModel.getMovieList()
+            viewBinding.swipeContainer.setOnRefreshListener {
+                viewModel.getMovieList()
+                swipeContainer.isRefreshing = false
             }
-        }.launchIn(lifecycleScope)
+        }else{
+            viewModel.getMoviesFavorite()
+            viewBinding.swipeContainer.setOnRefreshListener {
+                swipeContainer.isRefreshing = false
+            }
+        }
 
         return viewBinding.root
     }

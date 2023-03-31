@@ -8,12 +8,12 @@ import com.example.movieproject.data.remote.network.ConnectivityObserver
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
-    suspend fun getMovies(network: ConnectivityObserver.Status): Flow<List<MovieEntity>>
-    suspend fun getMovie(network: ConnectivityObserver.Status, id: String): Flow<MovieDetailEntity?>
+    suspend fun getMovies(): Flow<List<MovieEntity>>
+    suspend fun getMovie(id: String): Flow<MovieDetailEntity?>
 
     suspend fun getFavouriteMovie(id: String): Flow<MoviesFavourite?>
 
-    suspend fun searchMovies(network: ConnectivityObserver.Status, title: String): Flow<List<MovieLocal>?>?
+    suspend fun searchMovies(title: String): Flow<List<MovieLocal>?>?
 
     suspend fun insertFavourite(favourite: MoviesFavourite)
 

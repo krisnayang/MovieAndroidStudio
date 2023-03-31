@@ -1,17 +1,14 @@
 package com.example.movieproject.ui.viewmodel
 
 import app.cash.turbine.test
+import app.cash.turbine.testIn
 import com.example.movieproject.MainCoroutineRule
 import com.example.movieproject.data.local.localdatasource.MovieEntity
-import com.example.movieproject.data.local.localdatasource.asDomainModel
+import com.example.movieproject.data.local.localdatasource.MoviesFavourite
 import com.example.movieproject.data.local.model.MovieLocal
-import com.example.movieproject.data.remote.network.ConnectivityObserver
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.ui.state.Success
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert
 import org.junit.Before
@@ -20,46 +17,84 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import com.example.movieproject.ui.state.Error
+import com.example.movieproject.ui.state.Loading
+import com.example.movieproject.ui.state.UiState
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
 
 @ExperimentalCoroutinesApi
-internal class MovieViewModelTest{
+internal class MovieViewModelTest {
     private lateinit var viewModel: MovieViewModel
 
     @Mock
     private lateinit var repository: MovieRepository
 
-//    @get:Rule
-//    var instantTaskExecutorRule = InstantTaskExecutorRule()
-
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
     @Before
-    fun setup(){
+    fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = MovieViewModel(repository)
     }
 
+    //Success & data
     @Test
-    fun `test getMovieList()`() = mainCoroutineRule.dispatcher.runBlockingTest{
-        val expectedMovieList = flow{
-            emit(
-                listOf(MovieEntity("tt10366206",
-                    "John Wick: Chapter 4",
-                    "https://m.media-amazon.com/images/M/MV5BMDExZGMyOTMtMDgyYi00NGIwLWJhMTEtOTdkZGFjNmZiMTEwXkEyXkFqcGdeQXVyMjM4NTM5NDY@._V1_UX128_CR0,12,128,176_AL_.jpg")))
-        }
-        `when`(repository.getMovies(ConnectivityObserver.Status.Available)).thenReturn(expectedMovieList)
+    fun `test getMovieList() data Success`() = mainCoroutineRule.dispatcher.runBlockingTest  {
+        val list = emptyList<MovieEntity>()
+        `when`(repository.getMovies()).thenReturn(flowOf(list))
 
-        viewModel.getMovieList(ConnectivityObserver.Status.Available)
-        val res = viewModel.movies.value
-        Assert.assertTrue(res is Success<*>)
-        Assert.assertEquals((res as Success<*>).value, listOf(MovieLocal("tt10366206",
-            "John Wick: Chapter 4",
-            "https://m.media-amazon.com/images/M/MV5BMDExZGMyOTMtMDgyYi00NGIwLWJhMTEtOTdkZGFjNmZiMTEwXkEyXkFqcGdeQXVyMjM4NTM5NDY@._V1_UX128_CR0,12,128,176_AL_.jpg")))
+        val res = viewModel.movies
+        Assert.assertTrue(res.first() is Loading)
+
+        viewModel.getMovieList()
+
+        Assert.assertTrue(res.first() is Success<*>)
+        Assert.assertEquals(list, (res.first() as Success<*>).value)
     }
 
+    //Error & exception
     @Test
-    fun `test getMoviesFavorite()`(){
+    fun `test getMovieList() data Error`() = mainCoroutineRule.dispatcher.runBlockingTest {
+        val expectedMovieList = NullPointerException()
+//        `when`(repository.getMovies()).thenAnswer{expectedMovieList}
 
+        viewModel.getMovieList()
+        val res = viewModel.movies.value
+        Assert.assertTrue(res is Error)
+        Assert.assertEquals(expectedMovieList.toString() , (res as Error).errorMessage)
+    }
+
+    //Success & data
+    @Test
+    fun `test getMoviesFavorite() data Success`() = runTest{
+            val expectedMoviesFavorite = emptyList<MoviesFavourite>()
+            `when`(repository.getFavouriteMovies()).thenReturn(flowOf(expectedMoviesFavorite))
+
+            val res = viewModel.moviesFavorite
+
+            backgroundScope.launch {
+                viewModel.getMoviesFavorite()
+            }
+            Assert.assertTrue(res.first() is Loading)
+
+            Assert.assertTrue(res.drop(1).first() is Success<*>)
+            Assert.assertEquals(expectedMoviesFavorite, (res.first() as Success<*>).value)
+        }
+    //Error & exception
+    @Test
+    fun `test getMoviesFavorite() data Error`() = runTest {
+        val expectedMoviesFavorite = NullPointerException()
+
+        val res = viewModel.movies
+        backgroundScope.launch {
+            viewModel.getMovieList()
+        }
+        Assert.assertTrue(res.first() is Loading)
+        Assert.assertTrue(res.drop(1).first() is Error)
+        Assert.assertEquals(expectedMoviesFavorite.toString() , (res.first() as Error).errorMessage)
     }
 }

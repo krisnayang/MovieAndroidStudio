@@ -27,10 +27,10 @@ class FullCastRepositoryImpl @Inject constructor(
         }
     }
 
-     override suspend fun getFullCast(network: ConnectivityObserver.Status, id: String): Flow<List<FullCastEntity>>{
+     override suspend fun getFullCast(id: String): Flow<List<FullCastEntity>>{
          return withContext(Dispatchers.IO) {
 //             throw NullPointerException()
-             if (network.compareTo(ConnectivityObserver.Status.Available) == 0) {
+             if (checkInternet()) {
                  getFullCastFromApi(id)
              } else {
                  getFullCastFromDB(id)
@@ -46,5 +46,14 @@ class FullCastRepositoryImpl @Inject constructor(
         val response = api.getFullCast(id)
         insertFullCast(response)
         emit(response.asDatabaseFullCast())
+    }
+
+    private fun checkInternet(): Boolean{
+        val connectivityManager: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        if (networkInfo != null){
+            return true
+        }
+        return false
     }
 }

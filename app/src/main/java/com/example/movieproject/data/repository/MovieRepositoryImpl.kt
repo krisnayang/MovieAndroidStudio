@@ -35,20 +35,20 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMovies(network: ConnectivityObserver.Status): Flow<List<MovieEntity>>{
+    override suspend fun getMovies(): Flow<List<MovieEntity>>{
         return withContext(Dispatchers.IO) {
 //            throw NullPointerException()
-            if (network.compareTo(ConnectivityObserver.Status.Available) == 0) {
+            if (checkInternet()) {
                 getMoviesFromApi()
             } else {
                 getMoviesFromDb()
             }
         }
     }
-    override suspend fun getMovie(network: ConnectivityObserver.Status, id: String): Flow<MovieDetailEntity?> {
+    override suspend fun getMovie(id: String): Flow<MovieDetailEntity?> {
         return withContext(Dispatchers.IO) {
 //            throw NullPointerException()
-            if (network.compareTo(ConnectivityObserver.Status.Available) == 0) {
+            if (checkInternet()) {
                 getMovieFromApi(id)
             } else {
                 getMovieFromDb(id)
@@ -67,10 +67,10 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchMovies(network: ConnectivityObserver.Status, title: String): Flow<List<MovieLocal>?>{
+    override suspend fun searchMovies(title: String): Flow<List<MovieLocal>?>{
         return withContext(Dispatchers.IO) {
 //            throw NullPointerException()
-            if (network.compareTo(ConnectivityObserver.Status.Available) == 0){
+            if (checkInternet()){
                 getMovieSearchApi(title)
             }else{
                 getMovieSearchDb()
@@ -104,5 +104,14 @@ class MovieRepositoryImpl @Inject constructor(
 
     private suspend fun getMovieSearchDb(): Flow<List<MovieLocal>?> = flow{
         emit(emptyList())
+    }
+
+    private fun checkInternet(): Boolean{
+        val connectivityManager: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        if (networkInfo != null){
+            return true
+        }
+        return false
     }
 }

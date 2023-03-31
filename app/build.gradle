@@ -97,7 +97,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
     // Optional -- Mockito framework
     testImplementation "org.mockito:mockito-core:3.4.6"
-    testImplementation 'app.cash.turbine:turbine:0.7.0'
+    testImplementation 'app.cash.turbine:turbine:0.12.3'
 
     //Dagger - Hilt
     implementation "com.google.dagger:hilt-android:2.44"

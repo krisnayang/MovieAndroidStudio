@@ -9,5 +9,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface FullCastRepository{
     suspend fun insertFullCast(fullCastResponse: NetworkMovieById)
-    suspend fun getFullCast(network: ConnectivityObserver.Status, id: String): Flow<List<FullCastEntity>>
+    suspend fun getFullCast(id: String): Flow<List<FullCastEntity>>
 }

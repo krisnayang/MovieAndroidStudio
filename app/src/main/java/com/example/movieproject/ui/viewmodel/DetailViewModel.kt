@@ -41,10 +41,10 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getFullCast(network: ConnectivityObserver.Status, id: String) = viewModelScope.launch {
+    fun getFullCast(id: String) = viewModelScope.launch {
         _fullCastNew.value = Loading
         try {
-            fullCastRepository.getFullCast(network, id).collect {
+            fullCastRepository.getFullCast(id).collect {
                 _fullCastNew.value = Success(value = it)
             }
         } catch (e: Exception) {
@@ -53,10 +53,10 @@ class DetailViewModel @Inject constructor(
 
     }
 
-    fun getMovieDetail(network: ConnectivityObserver.Status, id: String) = viewModelScope.launch {
+    fun getMovieDetail(id: String) = viewModelScope.launch {
         _movieDetail.value = Loading
         try {
-            movieRepository.getMovie(network, id).collect {
+            movieRepository.getMovie(id).collect {
                 _movieDetail.value = Success(value = it)
             }
         } catch (e: Exception) {

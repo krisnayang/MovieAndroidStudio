@@ -24,14 +24,14 @@ class MovieViewModel @Inject constructor(
     private var _moviesFavorite: MutableStateFlow<UiState> = MutableStateFlow(Loading)
     val moviesFavorite: StateFlow<UiState> = _moviesFavorite
 
-    fun getMovieList(network: ConnectivityObserver.Status) = viewModelScope.launch {
+    fun getMovieList() = viewModelScope.launch {
         _movies.value = Loading
         try {
-            movieRepository.getMovies(network).collect {
+            movieRepository.getMovies().collect {
                 _movies.value = Success(value = it.asDomainModel())
             }
         } catch (e: Exception) {
-            _movies.value = Error(errorMessage = e.toString())
+            _movies.value = Error(e.toString())
         }
     }
 
