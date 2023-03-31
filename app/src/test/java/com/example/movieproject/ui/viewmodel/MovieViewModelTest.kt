@@ -60,7 +60,7 @@ internal class MovieViewModelTest {
     @Test
     fun `test getMovieList() data Error`() = mainCoroutineRule.dispatcher.runBlockingTest {
         val expectedMovieList = NullPointerException()
-//        `when`(repository.getMovies()).thenAnswer{expectedMovieList}
+        `when`(repository.getMovies()).thenAnswer{throw expectedMovieList}
 
         viewModel.getMovieList()
         val res = viewModel.movies.value
@@ -88,6 +88,7 @@ internal class MovieViewModelTest {
     @Test
     fun `test getMoviesFavorite() data Error`() = runTest {
         val expectedMoviesFavorite = NullPointerException()
+        `when`(repository.getMovies()).thenAnswer{throw expectedMoviesFavorite}
 
         val res = viewModel.movies
         backgroundScope.launch {

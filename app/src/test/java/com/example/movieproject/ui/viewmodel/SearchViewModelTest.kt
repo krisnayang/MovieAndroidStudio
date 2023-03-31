@@ -4,6 +4,7 @@ import com.example.movieproject.MainCoroutineRule
 import com.example.movieproject.data.local.localdatasource.MovieEntity
 import com.example.movieproject.data.local.model.MovieLocal
 import com.example.movieproject.data.repository.MovieRepository
+import com.example.movieproject.ui.state.Error
 import com.example.movieproject.ui.state.Loading
 import com.example.movieproject.ui.state.Success
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,7 +38,7 @@ internal class SearchViewModelTest{
 
     //Success data found
     @Test
-    fun `test search data with keyword`() = mainCoroutineRule.dispatcher.runBlockingTest{
+    fun `test search data with keyword Success`() = mainCoroutineRule.dispatcher.runBlockingTest{
         val list = emptyList<MovieLocal>()
         `when`(repository.searchMovies("")).thenReturn(flowOf(list))
 
@@ -47,5 +48,17 @@ internal class SearchViewModelTest{
 
         Assert.assertTrue(res.first() is Success<*>)
         Assert.assertEquals(list, (res.first() as Success<*>).value)
+    }
+
+    //Error
+    @Test
+    fun `test search data with keyword Error`() = mainCoroutineRule.dispatcher.runBlockingTest{
+        val expectedMovieList = NullPointerException()
+        `when`(repository.searchMovies("")).thenAnswer{throw expectedMovieList}
+
+        viewModel.searchMovies("")
+        val res = viewModel.movies.value
+        Assert.assertTrue(res is Error)
+        Assert.assertEquals(expectedMovieList.toString() , (res as Error).errorMessage)
     }
 }

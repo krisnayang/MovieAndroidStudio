@@ -1,9 +1,7 @@
 package com.example.movieproject.ui.viewmodel
 
 import androidx.lifecycle.*
-import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MoviesFavourite
-import com.example.movieproject.data.remote.network.ConnectivityObserver
 import com.example.movieproject.data.repository.FullCastRepository
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.ui.state.Loading
@@ -17,11 +15,12 @@ import com.example.movieproject.ui.state.Error
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val movieRepository: MovieRepository, private val fullCastRepository: FullCastRepository
+    private val movieRepository: MovieRepository,
+    private val fullCastRepository: FullCastRepository
 ) : ViewModel() {
 
-    private var _fullCastNew: MutableStateFlow<UiState> = MutableStateFlow(Loading)
-    val fullCastNew: StateFlow<UiState> = _fullCastNew
+    private var _fullCast: MutableStateFlow<UiState> = MutableStateFlow(Loading)
+    val fullCast: StateFlow<UiState> = _fullCast
 
     private var _movieDetail: MutableStateFlow<UiState?> = MutableStateFlow(Loading)
     val movieDetail: StateFlow<UiState?> = _movieDetail
@@ -42,13 +41,13 @@ class DetailViewModel @Inject constructor(
     }
 
     fun getFullCast(id: String) = viewModelScope.launch {
-        _fullCastNew.value = Loading
+        _fullCast.value = Loading
         try {
             fullCastRepository.getFullCast(id).collect {
-                _fullCastNew.value = Success(value = it)
+                _fullCast.value = Success(value = it)
             }
         } catch (e: Exception) {
-            _fullCastNew.value = Error(errorMessage = e.toString())
+            _fullCast.value = Error(errorMessage = e.toString())
         }
 
     }

@@ -86,7 +86,7 @@ class DetailMovieFragment : Fragment(R.layout.fragment_detail_movie) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.fullCastNew.collectLatest { state ->
+                    viewModel.fullCast.collectLatest { state ->
                         when (state) {
                             is Error -> errorFound()
                             is Loading -> binding.internetConn.visibility = View.VISIBLE
