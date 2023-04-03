@@ -160,18 +160,4 @@ internal class DetailViewModelTest{
         Assert.assertTrue(res.drop(1).first() is Error)
         Assert.assertEquals(list.toString(), (res.first() as Error).errorMessage)
     }
-
-    //Insert data favorite
-    @Test
-    fun `test insertFavorite data`() = runTest {
-
-
-    }
-
-    //Remove Data Favorite
-    @Test
-    fun `test removeFavorite data`() = runTest {
-
-
-    }
 }
