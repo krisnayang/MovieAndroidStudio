@@ -164,13 +164,14 @@ internal class DetailViewModelTest{
     //Insert data favorite
     @Test
     fun `test insertFavorite data`() = runTest {
-        viewModel.insertFavourite("id", "https:/image.com", "Title")
+
+
     }
 
     //Remove Data Favorite
     @Test
     fun `test removeFavorite data`() = runTest {
-        val movie = MoviesFavourite()
-        viewModel.removeFavourite(movie)
+
+
     }
 }

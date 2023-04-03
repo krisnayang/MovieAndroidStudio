@@ -1,7 +1,7 @@
 package com.example.movieproject.data.remote.remotedatasource
 
 data class MoviesResponse(
-    val items: List<NetworkMovie>
+    val items: List<NetworkMovie> = emptyList()
 )
 
 data class NetworkMovie (
@@ -31,7 +31,7 @@ data class Actors(
     val asCharacter: String? = ""
 )
 data class SearchMovieResponse(
-    val results: List<NetworkSearch>
+    val results: List<NetworkSearch> = emptyList()
 )
 
 data class NetworkSearch (
