@@ -1,6 +1,5 @@
 package com.example.movieproject.ui.viewmodel
 
-import com.example.movieproject.MainCoroutineRule
 import com.example.movieproject.data.local.localdatasource.FullCastEntity
 import com.example.movieproject.data.local.localdatasource.MovieDetailEntity
 import com.example.movieproject.data.local.localdatasource.MoviesFavourite
@@ -10,9 +9,12 @@ import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.ui.state.Loading
 import com.example.movieproject.ui.state.Success
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -21,6 +23,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import org.mockito.MockitoAnnotations.openMocks
 
 @ExperimentalCoroutinesApi
 internal class DetailViewModelTest{
@@ -31,18 +34,15 @@ internal class DetailViewModelTest{
     @Mock
     private lateinit var fullcastRepository: FullCastRepository
 
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
-
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        openMocks(this)
         viewModel = DetailViewModel(movieRepository, fullcastRepository)
     }
 
     //Fullcast Success
     @Test
-    fun `test getFullCast data success`() = mainCoroutineRule.dispatcher.runBlockingTest {
+    fun `test getFullCast data success`() = runTest {
         val list = emptyList<FullCastEntity>()
 //        val list = listOf(FullCastEntity(
 //            "nm1517976",
@@ -50,34 +50,40 @@ internal class DetailViewModelTest{
 //            "https://m.media-amazon.com/images/M/MV5BMTM4OTQ4NTU3NV5BMl5BanBnXkFtZTcwNjEwNDU0OQ@@._V1_Ratio1.0000_AL_.jpg",
 //            "Chris Pine",
 //            "Edgin"))
-        Mockito.`when`(fullcastRepository.getFullCast("tt6710474")).thenReturn(flowOf(list))
+        `when`(fullcastRepository.getFullCast("tt6710474")).thenReturn(flowOf(list))
 
         val res = viewModel.fullCast
+
+        backgroundScope.launch {
+            viewModel.getFullCast("tt6710474")
+        }
+
         Assert.assertTrue(res.first() is Loading)
-
-        viewModel.getFullCast("tt6710474")
-
-        Assert.assertTrue(res.first() is Success<*>)
+//        Assert.assertTrue(res.drop(1).first() is Error)
+        Assert.assertTrue(res.drop(1).first() is Success<*>)
         Assert.assertEquals(list, (res.first() as Success<*>).value)
     }
 
     //FullCast Error
     @Test
-    fun `test getFullCast data error`() = mainCoroutineRule.dispatcher.runBlockingTest {
+    fun `test getFullCast data error`() = runTest{
         val list = NullPointerException()
         `when`(fullcastRepository.getFullCast("tt6710474")).thenAnswer{throw list}
 
-        viewModel.getFullCast("tt6710474")
-        val res = viewModel.fullCast.value
+        val res = viewModel.fullCast
+        backgroundScope.launch {
+            viewModel.getFullCast("tt6710474")
+        }
 
-        Assert.assertTrue(res is Error)
-        Assert.assertEquals(list.toString(), (res as Error).errorMessage)
+        Assert.assertTrue(res.first() is Loading)
+        Assert.assertTrue(res.drop(1).first() is Error)
+        Assert.assertEquals(list.toString(), (res.first() as Error).errorMessage)
     }
 
 
     //Movie Detail Success
     @Test
-    fun `test getMovieDetail data success`() = mainCoroutineRule.dispatcher.runBlockingTest {
+    fun `test getMovieDetail data success`() = runTest{
 //        val data = MovieDetailEntity()
         val data = MovieDetailEntity(
             "tt2906216",
@@ -94,31 +100,33 @@ internal class DetailViewModelTest{
         `when`(movieRepository.getMovie("tt6710474")).thenReturn(flowOf(data))
 
         val res = viewModel.movieDetail
+        backgroundScope.launch {
+            viewModel.getMovieDetail("tt6710474")
+        }
         Assert.assertTrue(res.first() is Loading)
-
-        viewModel.getMovieDetail("tt6710474")
-
-        Assert.assertTrue(res.first() is Success<*>)
+        Assert.assertTrue(res.drop(1).first() is Success<*>)
         Assert.assertEquals(data, (res.first() as Success<*>).value)
     }
 
     //Movie Detail Error
     @Test
-    fun `test getMovieDetail data error`() = mainCoroutineRule.dispatcher.runBlockingTest {
+    fun `test getMovieDetail data error`() = runTest{
         val list = NullPointerException()
         `when`(movieRepository.getMovie("tt6710474")).thenAnswer{throw list}
 
-        viewModel.getMovieDetail("tt6710474")
-        val res = viewModel.movieDetail.value
+        backgroundScope.launch {
+            viewModel.getMovieDetail("tt6710474")
+        }
+        val res = viewModel.movieDetail
 
-        Assert.assertTrue(res is Error)
-        Assert.assertEquals(list.toString(), (res as Error).errorMessage)
+        Assert.assertTrue(res.drop(1).first() is Error)
+        Assert.assertEquals(list.toString(), (res.first() as Error).errorMessage)
     }
 
 
     //Favorite Movie Success
     @Test
-    fun `test getFavoriteMovie data success`() = mainCoroutineRule.dispatcher.runBlockingTest {
+    fun `test getFavoriteMovie data success`() = runTest{
 //        val data = MoviesFavourite()
         val data = MoviesFavourite(
             "tt2560078",
@@ -128,36 +136,40 @@ internal class DetailViewModelTest{
         `when`(movieRepository.getFavouriteMovie("tt2560078")).thenReturn(flowOf(data))
 
         val res = viewModel.favouriteMovie
+
+        backgroundScope.launch {
+            viewModel.getFavouriteMovie("tt2560078")
+        }
+
         Assert.assertTrue(res.first() is Loading)
-
-        viewModel.getFavouriteMovie("tt2560078")
-
-        Assert.assertTrue(res.first() is Success<*>)
+        Assert.assertTrue(res.drop(1).first() is Success<*>)
         Assert.assertEquals(data, (res.first() as Success<*>).value)
     }
 
     //Favorite Movie Error
     @Test
-    fun `test getFavoriteMovie data error`() = mainCoroutineRule.dispatcher.runBlockingTest {
+    fun `test getFavoriteMovie data error`() = runTest{
         val list = NullPointerException()
         `when`(movieRepository.getFavouriteMovie("tt2560078")).thenAnswer{throw list}
 
-        viewModel.getFavouriteMovie("tt2560078")
-        val res = viewModel.favouriteMovie.value
+        backgroundScope.launch {
+            viewModel.getFavouriteMovie("tt2560078")
+        }
+        val res = viewModel.favouriteMovie
 
-        Assert.assertTrue(res is Error)
-        Assert.assertEquals(list.toString(), (res as Error).errorMessage)
+        Assert.assertTrue(res.drop(1).first() is Error)
+        Assert.assertEquals(list.toString(), (res.first() as Error).errorMessage)
     }
 
     //Insert data favorite
     @Test
-    fun `test insertFavorite data`() = mainCoroutineRule.dispatcher.runBlockingTest {
+    fun `test insertFavorite data`() = runTest {
         viewModel.insertFavourite("id", "https:/image.com", "Title")
     }
 
     //Remove Data Favorite
     @Test
-    fun `test removeFavorite data`() = mainCoroutineRule.dispatcher.runBlockingTest {
+    fun `test removeFavorite data`() = runTest {
         val movie = MoviesFavourite()
         viewModel.removeFavourite(movie)
     }

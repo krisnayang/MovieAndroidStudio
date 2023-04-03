@@ -8,6 +8,7 @@ import com.example.movieproject.ui.state.Loading
 import com.example.movieproject.ui.state.UiState
 import com.example.movieproject.ui.state.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -21,10 +22,10 @@ class SearchViewModel @Inject constructor(
         MutableStateFlow(Success<List<MovieLocal>>(emptyList()))
     val movies: StateFlow<UiState> = _movies
 
-    fun searchMovies(title: String) = viewModelScope.launch {
+    fun searchMovies(title: String) = viewModelScope.launch(Dispatchers.IO){
         _movies.value = Loading
         try {
-            movieRepository.searchMovies(title)?.collect {
+            movieRepository.searchMovies(title).collect {
                 _movies.value = Success(value = it)
             }
         } catch (e: Exception) {

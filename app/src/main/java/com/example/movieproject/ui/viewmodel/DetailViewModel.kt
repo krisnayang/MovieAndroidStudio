@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.movieproject.ui.state.Error
+import kotlinx.coroutines.Dispatchers
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
@@ -29,18 +30,18 @@ class DetailViewModel @Inject constructor(
     val favouriteMovie: StateFlow<UiState?> = _favouriteMovie
 
     fun insertFavourite(id: String, image: String, title: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO){
             movieRepository.insertFavourite(MoviesFavourite(id, image, title))
         }
     }
 
     fun removeFavourite(movie: MoviesFavourite) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO){
             movieRepository.removeFavouriteMovie(movie)
         }
     }
 
-    fun getFullCast(id: String) = viewModelScope.launch {
+    fun getFullCast(id: String) = viewModelScope.launch(Dispatchers.IO){
         _fullCast.value = Loading
         try {
             fullCastRepository.getFullCast(id).collect {
@@ -52,7 +53,7 @@ class DetailViewModel @Inject constructor(
 
     }
 
-    fun getMovieDetail(id: String) = viewModelScope.launch {
+    fun getMovieDetail(id: String) = viewModelScope.launch(Dispatchers.IO) {
         _movieDetail.value = Loading
         try {
             movieRepository.getMovie(id).collect {
@@ -63,7 +64,7 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getFavouriteMovie(id: String) = viewModelScope.launch {
+    fun getFavouriteMovie(id: String) = viewModelScope.launch(Dispatchers.IO){
         _favouriteMovie.value = Loading
         try {
             movieRepository.getFavouriteMovie(id).collect {

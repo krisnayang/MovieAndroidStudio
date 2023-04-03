@@ -4,8 +4,7 @@ import android.content.Context
 import com.example.movieproject.data.local.localdatasource.MovieDatabase
 import com.example.movieproject.data.remote.api.APIService
 import com.example.movieproject.data.remote.network.Network
-import com.example.movieproject.data.repository.FullCastRepository
-import com.example.movieproject.data.repository.FullCastRepositoryImpl
+import com.example.movieproject.data.remote.network.NetworkImpl
 import com.example.movieproject.data.repository.MovieRepository
 import com.example.movieproject.data.repository.MovieRepositoryImpl
 import dagger.Module
@@ -17,22 +16,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+class NetworkModule {
     @Provides
     @Singleton
-    fun provideMovieRepository(
-        network: Network,
-        movieDatabase: MovieDatabase,
-        api: APIService): MovieRepository {
-        return MovieRepositoryImpl(network, movieDatabase.movieDao, api)
-    }
-
-    @Provides
-    @Singleton
-    fun provideFullCastRepository(
-        network: Network,
-        movieDatabase: MovieDatabase,
-        api: APIService): FullCastRepository {
-        return FullCastRepositoryImpl(network, movieDatabase.movieDao, api)
+    fun provideNetwork(
+        @ApplicationContext context: Context
+    ): Network {
+        return NetworkImpl(context)
     }
 }

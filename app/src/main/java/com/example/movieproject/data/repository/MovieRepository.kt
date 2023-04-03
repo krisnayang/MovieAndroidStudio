@@ -13,7 +13,7 @@ interface MovieRepository {
 
     suspend fun getFavouriteMovie(id: String): Flow<MoviesFavourite?>
 
-    suspend fun searchMovies(title: String): Flow<List<MovieLocal>?>?
+    suspend fun searchMovies(title: String): Flow<List<MovieLocal>>
 
     suspend fun insertFavourite(favourite: MoviesFavourite)
 

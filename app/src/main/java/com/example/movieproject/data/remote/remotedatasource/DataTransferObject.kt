@@ -21,7 +21,7 @@ data class NetworkMovieById (
     val genres: String? = "",
     val imDbRating: Double? = 0.0,
     val imDbRatingVotes: Int? = 0,
-    val actorList: List<Actors>
+    val actorList: List<Actors> = emptyList()
 )
 
 data class Actors(

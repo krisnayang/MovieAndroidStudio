@@ -9,6 +9,7 @@ import com.example.movieproject.ui.state.Loading
 import com.example.movieproject.ui.state.UiState
 import com.example.movieproject.ui.state.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,18 +25,18 @@ class MovieViewModel @Inject constructor(
     private var _moviesFavorite: MutableStateFlow<UiState> = MutableStateFlow(Loading)
     val moviesFavorite: StateFlow<UiState> = _moviesFavorite
 
-    fun getMovieList() = viewModelScope.launch {
+    fun getMovieList() = viewModelScope.launch(Dispatchers.IO){
         _movies.value = Loading
         try {
             movieRepository.getMovies().collect {
                 _movies.value = Success(value = it.asDomainModel())
             }
         } catch (e: Exception) {
-            _movies.value = Error(e.toString())
+            _movies.value = Error(errorMessage = e.toString())
         }
     }
 
-    fun getMoviesFavorite() = viewModelScope.launch {
+    fun getMoviesFavorite() = viewModelScope.launch(Dispatchers.IO) {
         _moviesFavorite.value = Loading
         try {
             movieRepository.getFavouriteMovies().collect {
