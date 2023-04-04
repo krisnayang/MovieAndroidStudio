@@ -47,7 +47,8 @@ internal class SearchViewModelTest{
             viewModel.searchMovies("")
         }
 
-        Assert.assertTrue(res.drop(2).first() is Success<*>)
+        Assert.assertTrue(res.drop(1).first() is Loading)
+        Assert.assertTrue(res.drop(1).first() is Success<*>)
         Assert.assertEquals(list, (res.first() as Success<*>).value)
     }
 
@@ -61,7 +62,8 @@ internal class SearchViewModelTest{
         backgroundScope.launch {
             viewModel.searchMovies("")
         }
-        Assert.assertTrue(res.drop(2).first() is Error)
+        Assert.assertTrue(res.drop(1).first() is Loading)
+        Assert.assertTrue(res.drop(1).first() is Error)
         Assert.assertEquals(expectedMovieList.toString() , (res.first() as Error).errorMessage)
     }
 }
